@@ -204,6 +204,19 @@
       header.chrome { padding: 18px 20px; font-size: 10px; }
     }
 
+    /* ─── page transition veil ──────────────────────── */
+    .veil {
+      position: fixed; inset: 0;
+      background: var(--ink-base);
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 320ms ease;
+    }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } }
+
     /* ─── reduced motion ────────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
@@ -212,9 +225,11 @@
 </head>
 <body>
 
+  <div class="veil" aria-hidden="true"></div>
+
   <header class="chrome">
-    <a href="index.html" class="mark" aria-label="back to mvxworld">mvxworld</a>
-    <a href="index.html">← back to the world</a>
+    <a href="index.html" class="mark" aria-label="back to mvxworld" data-internal>mvxworld</a>
+    <a href="index.html" data-internal>← back to the world</a>
   </header>
 
   <main class="transmission">
@@ -290,7 +305,7 @@
   </main>
 
   <footer class="back">
-    <a href="index.html" data-cursor>
+    <a href="index.html" data-cursor data-internal>
       <span>← return to the world</span>
       <span>mvxworld</span>
     </a>
@@ -298,8 +313,31 @@
 
   <div class="colophon">
     <span>set in cormorant garamond + ibm plex mono</span>
+    <span><a href="lore.html" data-internal>also: the lore →</a></span>
     <span>amsterdam · 52.3676° n 4.9041° e</span>
   </div>
+
+  <script>
+    /* fade-to-black page transition (light → dark) */
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
 
 </body>
 </html>

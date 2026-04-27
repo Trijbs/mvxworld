@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="description" content="the lore — mvxworld, in five panels.">
+  <meta property="og:title" content="mvxworld / lore">
+  <meta property="og:description" content="the manifesto, said slowly.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://mvxworld.art/lore.html">
+
+  <title>lore — mvxworld</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a09'/%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%23c8ff00'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    ::-moz-selection { background: var(--acid); color: var(--ink-base); }
+
+    /* grain — same vibe as index */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      opacity: .08; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 200px 200px;
+    }
+
+    /* scroll progress — thin line at top */
+    .progress {
+      position: fixed; top: 0; left: 0; height: 1px; width: 0;
+      background: var(--acid);
+      z-index: 60;
+      will-change: width;
+      transition: width 80ms linear;
+    }
+
+    /* fixed chrome — top mark + exit */
+    .chrome {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: var(--easy) var(--gutter);
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 50;
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      mix-blend-mode: difference;
+      pointer-events: none;
+    }
+    .chrome * { pointer-events: auto; }
+    .chrome .mark { color: var(--paper); display: flex; align-items: center; gap: 10px; }
+    .chrome .mark::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--acid); display: inline-block;
+      animation: pulse 3.4s var(--ease) infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .chrome .exit {
+      transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease);
+    }
+    .chrome .exit:hover, .chrome .exit:focus-visible { color: var(--acid); letter-spacing: .3em; }
+
+    /* fixed panel index — vertical, right side, desktop only */
+    .index {
+      position: fixed; right: var(--gutter); top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex; flex-direction: column; gap: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .3em;
+      color: var(--mute);
+      mix-blend-mode: difference;
+    }
+    .index .pip {
+      display: flex; align-items: center; gap: 10px;
+      transition: color var(--quick) var(--ease);
+    }
+    .index .pip::before {
+      content: ""; width: 16px; height: 1px; background: currentColor;
+      transition: width var(--med) var(--ease), background var(--quick) var(--ease);
+    }
+    .index .pip.active { color: var(--acid); }
+    .index .pip.active::before { width: 32px; }
+
+    /* the panels */
+    .panel {
+      min-height: 100vh; min-height: 100dvh;
+      padding: clamp(80px, 14vh, 160px) var(--gutter);
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: var(--easy);
+      align-content: center;
+      position: relative;
+      border-bottom: var(--line-soft);
+    }
+    .panel:last-of-type { border-bottom: 0; }
+    .roman {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      align-self: end;
+      padding-bottom: 4px;
+    }
+    .roman .num { color: var(--acid); display: inline-block; margin-bottom: 12px; }
+
+    .panel-body {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--paper);
+      line-height: .98;
+      letter-spacing: -.02em;
+    }
+    .panel-body em { color: var(--acid); font-style: italic; }
+
+    /* the title panel */
+    .panel--title .panel-body {
+      font-size: clamp(64px, 14vw, 220px);
+      line-height: .92;
+    }
+    .panel--title .lead {
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+    }
+    .panel--title .lead .acid { color: var(--acid); }
+
+    /* big-fragment panels (the manifesto body) */
+    .panel--fragment .panel-body {
+      font-size: clamp(40px, 7.5vw, 112px);
+    }
+    .panel--fragment .panel-body p { margin-bottom: .12em; }
+    .panel--fragment .panel-body .pause { color: var(--mute); font-style: italic; }
+
+    /* close panel — quieter, denser */
+    .panel--close .panel-body {
+      font-size: clamp(36px, 5.6vw, 84px);
+      line-height: 1.04;
+    }
+    .panel--close .signoff {
+      margin-top: var(--rhythm);
+      display: flex; flex-wrap: wrap; gap: var(--easy);
+      align-items: center;
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .panel--close .signoff .return {
+      display: inline-flex; align-items: center; gap: 14px;
+      color: var(--paper);
+      padding: 14px 0;
+      border-top: var(--line);
+      border-bottom: var(--line);
+      transition: color var(--med) var(--ease), letter-spacing var(--med) var(--ease);
+    }
+    .panel--close .signoff .return:hover,
+    .panel--close .signoff .return:focus-visible {
+      color: var(--acid);
+      letter-spacing: .3em;
+    }
+    .panel--close .signoff .return span:first-child { transition: transform var(--med) var(--ease); }
+    .panel--close .signoff .return:hover span:first-child { transform: translateX(-8px); }
+
+    /* reveal-on-scroll */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); transition-delay: var(--delay, 0ms); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* page transition veil */
+    .veil {
+      position: fixed; inset: 0;
+      background: var(--ink-base);
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 320ms ease;
+    }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; border-radius: 1px; }
+
+    /* responsive */
+    @media (max-width: 880px) {
+      .index { display: none; }
+      .panel { grid-template-columns: 1fr; gap: var(--snug); padding-top: clamp(96px, 18vh, 180px); }
+      .roman { writing-mode: horizontal-tb; transform: none; padding-bottom: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      html { scroll-behavior: auto; }
+      .veil { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="veil" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header class="chrome">
+    <a href="index.html" class="mark" data-internal>mvxworld<span style="color: var(--mute); margin-left: 8px;">/lore</span></a>
+    <a href="index.html" class="exit" data-internal>← exit</a>
+  </header>
+
+  <nav class="index" aria-label="lore panels">
+    <a href="#i" class="pip" data-pip="i"><span>I</span></a>
+    <a href="#ii" class="pip" data-pip="ii"><span>II</span></a>
+    <a href="#iii" class="pip" data-pip="iii"><span>III</span></a>
+    <a href="#iv" class="pip" data-pip="iv"><span>IV</span></a>
+    <a href="#v" class="pip" data-pip="v"><span>V</span></a>
+    <a href="#return" class="pip" data-pip="return"><span>↻</span></a>
+  </nav>
+
+  <main>
+
+    <!-- title panel -->
+    <section class="panel panel--title" id="i">
+      <div class="roman"><span class="num">I</span> the lore</div>
+      <div>
+        <p class="lead reveal">document classified <span class="acid">/</span> transmission · 001b <span class="acid">/</span> read at full volume</p>
+        <h1 class="panel-body reveal" style="--delay: 200ms">the<br>inter<em>section</em>.</h1>
+      </div>
+    </section>
+
+    <!-- panel ii — the negation -->
+    <section class="panel panel--fragment" id="ii">
+      <div class="roman"><span class="num">II</span> the negation</div>
+      <div class="panel-body">
+        <p class="reveal">i am not a designer.</p>
+        <p class="reveal" style="--delay: 200ms">i am not a coder.</p>
+        <p class="reveal" style="--delay: 400ms">i am not an entrepreneur.</p>
+        <p class="reveal" style="--delay: 800ms">i am the <em>intersection</em>.</p>
+      </div>
+    </section>
+
+    <!-- panel iii — the throughline -->
+    <section class="panel panel--fragment" id="iii">
+      <div class="roman"><span class="num">III</span> the throughline</div>
+      <div class="panel-body">
+        <p class="reveal">from <em>forts</em></p>
+        <p class="reveal" style="--delay: 200ms">to worlds.</p>
+        <p class="reveal" style="--delay: 600ms">from minecraft servers</p>
+        <p class="reveal" style="--delay: 800ms">to media <em>campaigns</em>.</p>
+        <p class="reveal pause" style="--delay: 1200ms">— the medium and i were raised together.</p>
+      </div>
+    </section>
+
+    <!-- panel iv — the unfair advantage -->
+    <section class="panel panel--fragment" id="iv">
+      <div class="roman"><span class="num">IV</span> the advantage</div>
+      <div class="panel-body">
+        <p class="reveal">most designers can make things <em>look good</em>.</p>
+        <p class="reveal" style="--delay: 400ms; font-size: .82em; line-height: 1.04;">
+          far fewer understand <em>internet culture</em>,
+          gaming psychology, community mechanics —
+          the language of the online world.
+        </p>
+      </div>
+    </section>
+
+    <!-- panel v — the close -->
+    <section class="panel panel--fragment" id="v">
+      <div class="roman"><span class="num">V</span> the archive</div>
+      <div class="panel-body">
+        <p class="reveal">that is the <em>unfair</em> advantage.</p>
+        <p class="reveal" style="--delay: 600ms">this is the <em>archive</em>.</p>
+      </div>
+    </section>
+
+    <!-- close — exit -->
+    <section class="panel panel--close" id="return">
+      <div class="roman"><span class="num">↻</span> return</div>
+      <div>
+        <h2 class="panel-body reveal">welcome inside.<br>stay as long as you want.<br>the door doesn't <em>lock</em>.</h2>
+        <div class="signoff reveal" style="--delay: 400ms">
+          <a href="index.html" class="return" data-internal>
+            <span>←</span>
+            <span>return to the world</span>
+          </a>
+          <span>· tjbz · doc 001b · v0.1</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ── reveal observer ── */
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+
+    /* ── scroll progress + active panel pip ── */
+    (function () {
+      var progress = document.getElementById('progress');
+      var pips = document.querySelectorAll('.index .pip');
+      var panels = document.querySelectorAll('.panel');
+      function tick() {
+        var scrollable = (document.documentElement.scrollHeight - window.innerHeight);
+        var p = scrollable > 0 ? (window.scrollY / scrollable) : 0;
+        progress.style.width = (p * 100).toFixed(2) + '%';
+        // active panel = the one whose center is closest to viewport center
+        var vc = window.scrollY + window.innerHeight / 2;
+        var best = 0, bestDist = Infinity;
+        panels.forEach(function (panel, i) {
+          var rect = panel.getBoundingClientRect();
+          var center = rect.top + window.scrollY + rect.height / 2;
+          var d = Math.abs(center - vc);
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        pips.forEach(function (pip, i) {
+          pip.classList.toggle('active', i === best);
+        });
+      }
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () { tick(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+      window.addEventListener('resize', tick, { passive: true });
+      tick();
+    })();
+
+    /* ── fade-to-black page transition ── */
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      // fade out on load
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+
+      if (prefersReduce) return;
+
+      // intercept internal links — fade to black, then navigate
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
+
+</body>
+</html>

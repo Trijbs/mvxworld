@@ -495,9 +495,25 @@
       outline-offset: 4px;
       border-radius: 1px;
     }
+
+    /* ─── page transition veil (fade-to-black between rooms) ── */
+    .veil {
+      position: fixed; inset: 0;
+      background: var(--ink-base);
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 320ms ease;
+    }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } }
   </style>
 </head>
 <body>
+
+  <!-- page transition veil -->
+  <div class="veil" aria-hidden="true"></div>
 
   <!-- grain overlay -->
   <div class="grain" aria-hidden="true"></div>
@@ -511,7 +527,8 @@
     <a class="mark reveal" href="/" data-cursor style="--delay: 0ms">mvxworld<span style="color: var(--mute); margin-left: 8px;">/v0.1</span></a>
     <nav class="nav reveal" aria-label="primary" style="--delay: 200ms">
       <span class="clock" id="clock" aria-live="off">— : — : —</span>
-      <a href="post.html" data-cursor>transmission 001</a>
+      <a href="post.html" data-cursor data-internal>transmission 001</a>
+      <a href="lore.html" data-cursor data-internal>the lore</a>
       <a href="https://github.com/Trijbs" target="_blank" rel="noopener" data-cursor>github ↗</a>
     </nav>
   </header>
@@ -552,7 +569,7 @@
         <span class="sep">/</span>
         <span class="dim" data-whisper="not yet · 404 by design" tabindex="0" data-cursor>hyptc</span>
         <span class="sep">/</span>
-        <span class="dim" data-whisper="origin · lore · classified" tabindex="0" data-cursor>TriButer</span>
+        <a href="lore.html" data-cursor data-internal>TriButer</a>
         <span class="sep">/</span>
         <span class="dim" data-whisper="post-irony detected" tabindex="0" data-cursor>qPathetic</span>
       </div>
@@ -602,7 +619,7 @@
         </p>
         <div class="teaser-cta">
           <span class="label">read the full text</span>
-          <a class="link" href="post.html" data-cursor>
+          <a class="link" href="post.html" data-cursor data-internal>
             <span>transmission 001 — the intersection</span>
             <span>→</span>
           </a>
@@ -620,7 +637,7 @@
           <span class="field">length <span>· 2 minutes</span></span>
           <span class="field">status <span>· broadcast</span></span>
         </div>
-        <a class="latest-card" href="post.html" data-cursor>
+        <a class="latest-card" href="post.html" data-cursor data-internal>
           <div class="latest-num">001 · 2026 · 04 · 27</div>
           <h2 class="latest-title">the intersection.</h2>
           <div class="latest-foot">
@@ -733,6 +750,26 @@
       }
       tick();
       setInterval(tick, 1000);
+    })();
+
+    /* ─── fade-to-black page transitions ──────────── */
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
     })();
 
     /* ─── days-since-last-interesting-idea counter ──── */
