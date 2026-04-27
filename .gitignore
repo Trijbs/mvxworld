@@ -1,0 +1,23 @@
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# logs
+*.log
+npm-debug.log*
+
+# build / cache (not used in phase 1, but reserved)
+node_modules/
+dist/
+.cache/
+
+# env / secrets
+.env
+.env.*

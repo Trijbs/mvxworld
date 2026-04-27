@@ -1,0 +1,47 @@
+/* ─────────────────────────────────────────────────────────
+   mvxworld.art — design tokens
+   one source of truth for both rooms.
+   ───────────────────────────────────────────────────────── */
+
+:root {
+  /* color */
+  --ink-base: #0a0a09;        /* near-black, index bg */
+  --ink-surface: #1a1a18;     /* hover wells, panels */
+  --paper: #f5f3ee;           /* off-white text on dark */
+  --paper-deep: #ebe7dc;      /* slightly cooler, post bg */
+  --acid: #c8ff00;            /* primary accent */
+  --burn: #ff4d1c;            /* secondary, used max once (use only on dark) */
+  --mute: #8a887e;            /* metadata on dark — bumped to clear WCAG AA at small sizes */
+  --ink-mute: #58564f;        /* metadata on paper-deep — solid, ≈ 5.9:1 contrast */
+
+  /* type */
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* scale (16px base, 1.25 ratio, fluid where it matters) */
+  --t-meta: 12px;
+  --t-label: 14px;
+  --t-base: 16px;
+  --t-display-sm: clamp(20px, 2vw, 28px);
+  --t-section: clamp(24px, 3vw, 36px);
+  --t-hero-sub: clamp(28px, 4vw, 56px);
+  --t-hero: clamp(72px, 18vw, 220px);
+
+  /* spacing (8px base) */
+  --gutter: clamp(20px, 5vw, 64px);
+  --rhythm: clamp(64px, 10vh, 128px);
+  --tight: 8px;
+  --snug: 16px;
+  --easy: 24px;
+  --roomy: 48px;
+
+  /* motion */
+  --slow: 1200ms;
+  --med: 480ms;
+  --quick: 240ms;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+
+  /* lines */
+  --line: 1px solid rgba(245, 243, 238, .12);
+  --line-soft: 1px solid rgba(245, 243, 238, .06);
+}

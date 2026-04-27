@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="description" content="mvxworld — a personal universe, archived in transmissions. v0.1, expanding.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="mvxworld">
+  <meta property="og:description" content="personal universe · v0.1 · expanding">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mvxworld.art">
+
+  <title>mvxworld — v0.1</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a09'/%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%23c8ff00'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    /* ─── reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { background: none; border: 0; color: inherit; font: inherit; }
+
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    ::-moz-selection { background: var(--acid); color: var(--ink-base); }
+
+    /* ─── grain overlay ─────────────────────────────── */
+    .grain {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: .08;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 200px 200px;
+    }
+
+    /* ─── custom cursor (pointer-fine only) ─────────── */
+    .cursor-dot, .cursor-ring {
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 200;
+      transform: translate3d(-100px, -100px, 0);
+      will-change: transform;
+    }
+    .cursor-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--acid);
+      transition: transform .08s linear, opacity var(--quick) var(--ease);
+    }
+    .cursor-ring {
+      width: 28px; height: 28px; border: 1px solid var(--acid); border-radius: 50%;
+      transition: transform .24s var(--ease), width var(--quick) var(--ease), height var(--quick) var(--ease), opacity var(--quick) var(--ease);
+    }
+    body.is-hover .cursor-ring { width: 56px; height: 56px; }
+    body.is-down .cursor-ring { width: 16px; height: 16px; }
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      a, button, [data-cursor] { cursor: none; }
+    }
+    @media (hover: none), (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+
+    /* ─── reveal animation ──────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); transition-delay: var(--delay, 0ms); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── layout ────────────────────────────────────── */
+    .frame { position: relative; padding: 0 var(--gutter); }
+
+    /* ─── header / nav ──────────────────────────────── */
+    .top {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: var(--easy) var(--gutter);
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: var(--easy);
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    .top * { pointer-events: auto; }
+    .mark {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--paper);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mark::before {
+      content: "";
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--acid);
+      display: inline-block;
+      animation: pulse 3.4s var(--ease) infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+    .nav {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .nav a {
+      transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease);
+    }
+    .nav a:hover, .nav a:focus-visible {
+      color: var(--acid);
+      letter-spacing: .22em;
+    }
+    .nav .clock {
+      color: var(--paper);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── hero ──────────────────────────────────────── */
+    .hero {
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: calc(var(--rhythm) + 60px) var(--gutter) var(--rhythm);
+      position: relative;
+    }
+    .hero-meta {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+      display: flex; gap: var(--easy); flex-wrap: wrap;
+    }
+    .hero-meta .acid { color: var(--acid); }
+    .hero-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-hero);
+      line-height: .88;
+      letter-spacing: -.02em;
+      color: var(--paper);
+      margin-left: -.04em; /* italic optical correction */
+    }
+    .hero-title .x {
+      font-style: italic;
+      color: var(--acid);
+    }
+    .hero-sub {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-hero-sub);
+      line-height: 1.1;
+      color: var(--mute);
+      margin-top: var(--easy);
+      max-width: 22ch;
+    }
+    .hero-foot {
+      position: absolute; bottom: var(--rhythm); left: var(--gutter); right: var(--gutter);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .hero-foot .arrow {
+      color: var(--paper);
+      animation: drift 2.4s var(--ease) infinite;
+    }
+    @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+    /* ─── section frame ─────────────────────────────── */
+    section.room {
+      padding: var(--rhythm) var(--gutter);
+      border-top: var(--line-soft);
+      position: relative;
+    }
+    .room-label {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      display: flex; align-items: center; gap: var(--snug);
+      margin-bottom: var(--roomy);
+    }
+    .room-label::before {
+      content: "";
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: currentColor;
+    }
+    .room-num { color: var(--acid); }
+
+    /* ─── frequencies (identity strip) ──────────────── */
+    .freqs {
+      display: flex; flex-wrap: wrap;
+      gap: var(--snug) var(--easy);
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-display-sm);
+      align-items: baseline;
+    }
+    .freqs a, .freqs span {
+      position: relative;
+      transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease);
+    }
+    .freqs a { color: var(--paper); }
+    .freqs a::after {
+      content: "↗";
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 10px;
+      vertical-align: super;
+      margin-left: 4px;
+      color: var(--acid);
+      opacity: 0;
+      transition: opacity var(--quick) var(--ease);
+    }
+    .freqs a:hover, .freqs a:focus-visible { color: var(--acid); letter-spacing: .02em; }
+    .freqs a:hover::after, .freqs a:focus-visible::after { opacity: 1; }
+    .freqs .dim { color: var(--mute); }
+    .freqs .dim:hover::before, .freqs .dim:focus-visible::before {
+      content: attr(data-whisper);
+      position: absolute;
+      bottom: -28px; left: 0;
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mute);
+      white-space: nowrap;
+    }
+    .freqs .dim { cursor: help; }
+    .freqs .sep { color: var(--mute); font-style: normal; font-family: var(--mono); font-size: .7em; }
+
+    /* ─── status / currently ────────────────────────── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--easy);
+    }
+    .status-cell {
+      border-top: var(--line);
+      padding-top: var(--snug);
+    }
+    .status-key {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--snug);
+    }
+    .status-val {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-display-sm);
+      color: var(--paper);
+      line-height: 1.25;
+    }
+    .status-val .acid { color: var(--acid); font-style: italic; }
+
+    /* ─── counter (the weird module) ────────────────── */
+    .counter {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: var(--easy);
+      padding: var(--roomy) 0;
+    }
+    .counter-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-section);
+      color: var(--paper);
+      line-height: 1.18;
+      max-width: 22ch;
+    }
+    .counter-text .num {
+      color: var(--acid);
+      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      min-width: 1ch;
+    }
+    .counter-meta {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      text-align: right;
+      line-height: 1.5;
+    }
+    .counter-meta .since {
+      color: var(--paper);
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* the section that breaks the grid (the accent) */
+    .room--break {
+      border-top: var(--line);
+    }
+    .room--break .room-label { color: var(--acid); }
+
+    /* ─── manifesto teaser ──────────────────────────── */
+    .teaser {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--rhythm);
+      align-items: end;
+    }
+    .teaser-body {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-hero-sub);
+      line-height: 1.04;
+      color: var(--paper);
+      max-width: 16ch;
+    }
+    .teaser-body em { color: var(--acid); font-style: italic; }
+    .teaser-cta {
+      display: flex; flex-direction: column; gap: var(--snug);
+      align-items: flex-start;
+    }
+    .teaser-cta .label {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .teaser-cta .link {
+      font-family: var(--mono);
+      font-size: var(--t-label);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--paper);
+      padding: 14px 0 14px 0;
+      border-top: var(--line);
+      border-bottom: var(--line);
+      width: 100%; max-width: 360px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: letter-spacing var(--med) var(--ease), color var(--med) var(--ease);
+    }
+    .teaser-cta .link:hover, .teaser-cta .link:focus-visible {
+      letter-spacing: .22em;
+      color: var(--acid);
+    }
+    .teaser-cta .link span:last-child { transition: transform var(--med) var(--ease); }
+    .teaser-cta .link:hover span:last-child { transform: translateX(8px); }
+
+    /* ─── transmission card ─────────────────────────── */
+    .latest {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--rhythm);
+      align-items: start;
+    }
+    .latest-meta {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      line-height: 1.7;
+    }
+    .latest-meta .field { display: block; }
+    .latest-meta .field span { color: var(--paper); }
+    .latest-card {
+      display: block;
+      padding: var(--easy) 0;
+      border-top: var(--line);
+      border-bottom: var(--line);
+      transition: border-color var(--quick) var(--ease);
+    }
+    .latest-card:hover { border-color: var(--acid); }
+    .latest-num {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: var(--snug);
+    }
+    .latest-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--t-section);
+      color: var(--paper);
+      line-height: 1.1;
+      margin-bottom: var(--snug);
+      transition: color var(--quick) var(--ease);
+    }
+    .latest-card:hover .latest-title { color: var(--acid); }
+    .latest-foot {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+
+    /* ─── footer / koordinaten ──────────────────────── */
+    footer.koord {
+      padding: var(--rhythm) var(--gutter) var(--easy);
+      border-top: var(--line-soft);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      align-items: end;
+    }
+    footer.koord b {
+      display: block;
+      font-weight: 400;
+      color: var(--paper);
+      margin-bottom: 6px;
+    }
+    footer.koord .right { text-align: right; }
+    footer.koord .center { text-align: center; }
+    footer.koord .acid { color: var(--acid); }
+
+    /* ─── transmission ticker (subtle, bottom of viewport, unobtrusive) ── */
+    /* reserved for phase 2 — leaving the hook here */
+
+    /* ─── responsive ────────────────────────────────── */
+    @media (max-width: 880px) {
+      .hero-foot { position: static; margin-top: var(--rhythm); }
+      .status-grid { grid-template-columns: 1fr; }
+      .teaser, .latest { grid-template-columns: 1fr; gap: var(--easy); }
+      .counter { grid-template-columns: 1fr; }
+      .counter-meta { text-align: left; }
+      footer.koord { grid-template-columns: 1fr; }
+      footer.koord .right, footer.koord .center { text-align: left; }
+      .top { padding: var(--snug) var(--gutter); }
+      .nav { font-size: 10px; }
+    }
+    @media (max-width: 480px) {
+      .hero-meta { font-size: 10px; gap: var(--snug); }
+      .nav .clock { display: none; }
+    }
+
+    /* ─── reduced motion ────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .cursor-dot, .cursor-ring { display: none; }
+      body { cursor: auto !important; }
+      a, button { cursor: pointer !important; }
+    }
+
+    /* ─── focus visible ─────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--acid);
+      outline-offset: 4px;
+      border-radius: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- grain overlay -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- custom cursor -->
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- top chrome -->
+  <header class="top">
+    <a class="mark reveal" href="/" data-cursor style="--delay: 0ms">mvxworld<span style="color: var(--mute); margin-left: 8px;">/v0.1</span></a>
+    <nav class="nav reveal" aria-label="primary" style="--delay: 200ms">
+      <span class="clock" id="clock" aria-live="off">— : — : —</span>
+      <a href="post.html" data-cursor>transmission 001</a>
+      <a href="https://github.com/Trijbs" target="_blank" rel="noopener" data-cursor>github ↗</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- hero — the held breath -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-meta reveal" style="--delay: 200ms">
+        <span>// document 001</span>
+        <span class="acid">● live</span>
+        <span>amsterdam · nl</span>
+      </div>
+
+      <h1 id="hero-title" class="hero-title reveal" style="--delay: 600ms">
+        m<span class="x">v</span>xworld<span style="color: var(--mute); font-style: italic;">.</span>
+      </h1>
+
+      <p class="hero-sub reveal" style="--delay: 1000ms">
+        a personal universe, archived in transmissions.
+      </p>
+
+      <div class="hero-foot reveal" style="--delay: 1400ms">
+        <span>scroll &nbsp;<span class="arrow">↓</span>&nbsp; enter the room</span>
+        <span>v0.1 · expanding</span>
+      </div>
+    </section>
+
+    <!-- room 01 — frequencies -->
+    <section class="room" aria-labelledby="freq-label">
+      <div class="room-label reveal"><span class="room-num">01</span> &nbsp;·&nbsp; <span id="freq-label">frequencies / inhabitants</span></div>
+      <div class="freqs reveal">
+        <span class="acid" style="color: var(--acid)">MVX</span>
+        <span class="sep">/</span>
+        <a href="https://github.com/Trijbs" target="_blank" rel="noopener" data-cursor>tjbz</a>
+        <span class="sep">/</span>
+        <a href="https://www.instagram.com/mvdhs.x/" target="_blank" rel="noopener" data-cursor>eyew</a>
+        <span class="sep">/</span>
+        <span class="dim" data-whisper="not yet · 404 by design" tabindex="0" data-cursor>hyptc</span>
+        <span class="sep">/</span>
+        <span class="dim" data-whisper="origin · lore · classified" tabindex="0" data-cursor>TriButer</span>
+        <span class="sep">/</span>
+        <span class="dim" data-whisper="post-irony detected" tabindex="0" data-cursor>qPathetic</span>
+      </div>
+    </section>
+
+    <!-- room 02 — currently / status -->
+    <section class="room" aria-labelledby="status-label">
+      <div class="room-label reveal"><span class="room-num">02</span> &nbsp;·&nbsp; <span id="status-label">currently</span></div>
+      <div class="status-grid reveal">
+        <div class="status-cell">
+          <div class="status-key">building</div>
+          <div class="status-val">this <span class="acid">archive</span>, slowly, on purpose.</div>
+        </div>
+        <div class="status-cell">
+          <div class="status-key">listening</div>
+          <div class="status-val">noise that wakes up before it explodes.</div>
+        </div>
+        <div class="status-cell">
+          <div class="status-key">thinking</div>
+          <div class="status-val">about <span class="acid">rooms</span>, not pages.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- room 03 — the counter (the break in the grid) -->
+    <section class="room room--break" aria-labelledby="counter-label">
+      <div class="room-label reveal"><span class="room-num">03</span> &nbsp;·&nbsp; <span id="counter-label">the counter</span></div>
+      <div class="counter reveal">
+        <p class="counter-text">
+          days since last interesting&nbsp;idea: <span class="num" id="idea-counter">0</span>.
+        </p>
+        <div class="counter-meta">
+          <span>last reset</span>
+          <span class="since"><time id="reset-date" datetime="2026-04-27">2026 · 04 · 27</time></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- room 04 — manifesto teaser -->
+    <section class="room" aria-labelledby="teaser-label">
+      <div class="room-label reveal"><span class="room-num">04</span> &nbsp;·&nbsp; <span id="teaser-label">a transmission, in fragments</span></div>
+      <div class="teaser reveal">
+        <p class="teaser-body">
+          i am not a designer.<br>
+          i am not a coder.<br>
+          i am the <em>intersection</em>.
+        </p>
+        <div class="teaser-cta">
+          <span class="label">read the full text</span>
+          <a class="link" href="post.html" data-cursor>
+            <span>transmission 001 — the intersection</span>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- room 05 — latest transmission -->
+    <section class="room" aria-labelledby="latest-label">
+      <div class="room-label reveal"><span class="room-num">05</span> &nbsp;·&nbsp; <span id="latest-label">latest transmission</span></div>
+      <div class="latest reveal">
+        <div class="latest-meta">
+          <span class="field">filed under <span>· manifesto</span></span>
+          <span class="field">frequency <span>· MVX</span></span>
+          <span class="field">length <span>· 2 minutes</span></span>
+          <span class="field">status <span>· broadcast</span></span>
+        </div>
+        <a class="latest-card" href="post.html" data-cursor>
+          <div class="latest-num">001 · 2026 · 04 · 27</div>
+          <h2 class="latest-title">the intersection.</h2>
+          <div class="latest-foot">
+            <span>read transmission</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- koordinaten / footer -->
+  <footer class="koord">
+    <div>
+      <b>koordinaten</b>
+      52.3676° N · 4.9041° E
+    </div>
+    <div class="center">
+      <b>mvx<span class="acid">/</span>time</b>
+      <span id="clock-foot">— : — : —</span> CET
+    </div>
+    <div class="right">
+      <b>doc 001 · v0.1</b>
+      expanding · <span class="acid">●</span> still here
+    </div>
+  </footer>
+
+  <script>
+    /* ─── reveal observer ──────────────────────────── */
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+
+    /* ─── custom cursor ────────────────────────────── */
+    (function () {
+      var canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!canHover || prefersReduce) return;
+
+      var dot = document.querySelector('.cursor-dot');
+      var ring = document.querySelector('.cursor-ring');
+      var dx = -100, dy = -100, rx = -100, ry = -100;
+
+      window.addEventListener('mousemove', function (e) {
+        dx = e.clientX; dy = e.clientY;
+      }, { passive: true });
+
+      // ease the ring slightly behind the dot
+      function loop() {
+        rx += (dx - rx) * 0.18;
+        ry += (dy - ry) * 0.18;
+        dot.style.transform = 'translate3d(' + dx + 'px, ' + dy + 'px, 0) translate(-50%, -50%)';
+        ring.style.transform = 'translate3d(' + rx + 'px, ' + ry + 'px, 0) translate(-50%, -50%)';
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      function isHoverable(t) {
+        return t && (t.matches('a, button, [data-cursor]') || (t.closest && t.closest('a, button, [data-cursor]')));
+      }
+      window.addEventListener('mouseover', function (e) {
+        if (isHoverable(e.target)) document.body.classList.add('is-hover');
+      });
+      window.addEventListener('mouseout', function (e) {
+        if (isHoverable(e.target)) document.body.classList.remove('is-hover');
+      });
+      window.addEventListener('mousedown', function () { document.body.classList.add('is-down'); });
+      window.addEventListener('mouseup', function () { document.body.classList.remove('is-down'); });
+      window.addEventListener('blur', function () { document.body.classList.remove('is-hover', 'is-down'); });
+    })();
+
+    /* ─── MVX/TIME clock (Amsterdam) ───────────────── */
+    (function () {
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      function tick() {
+        // Amsterdam time using Intl
+        try {
+          var fmt = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Europe/Amsterdam',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+          });
+          var t = fmt.format(new Date()).replace(/\s/g, '');
+          // ensure colon separators
+          if (t.indexOf(':') === -1) {
+            var d = new Date();
+            t = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+          }
+          var nodes = document.querySelectorAll('#clock, #clock-foot');
+          nodes.forEach(function (n) { n.textContent = t; });
+        } catch (e) {
+          var d = new Date();
+          var t2 = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+          var nodes2 = document.querySelectorAll('#clock, #clock-foot');
+          nodes2.forEach(function (n) { n.textContent = t2; });
+        }
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    /* ─── days-since-last-interesting-idea counter ──── */
+    (function () {
+      var el = document.getElementById('idea-counter');
+      var resetEl = document.getElementById('reset-date');
+      if (!el || !resetEl) return;
+      var resetIso = resetEl.getAttribute('datetime');
+      if (!resetIso) return;
+      var reset = new Date(resetIso + 'T00:00:00');
+      var now = new Date();
+      var ms = now - reset;
+      var days = Math.max(0, Math.floor(ms / 86400000));
+      // animate up to the value, slowly, once
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce || days <= 1) {
+        el.textContent = days;
+        return;
+      }
+      var frame = 0;
+      var dur = Math.min(1200, 80 * days);
+      var start = null;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / dur);
+        var v = Math.floor(p * days);
+        el.textContent = v;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    })();
+  </script>
+
+</body>
+</html>

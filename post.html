@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ebe7dc">
+  <meta name="description" content="transmission 001 — the intersection. the manifesto post for mvxworld.art.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="transmission 001 — the intersection">
+  <meta property="og:description" content="i am not a designer. i am not a coder. i am the intersection.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://mvxworld.art/post.html">
+
+  <title>transmission 001 — the intersection · mvxworld</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ebe7dc'/%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%230a0a09'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    /* ─── reset ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      background: var(--paper-deep);
+      color: var(--ink-base);
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 19px;
+      line-height: 1.62;
+      min-height: 100vh;
+      /* intentional: no grain, no acid selection. the post is the calm room. */
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── chrome — minimal mark, top corners ──────── */
+    header.chrome {
+      position: sticky; top: 0;
+      background: var(--paper-deep);
+      padding: 24px clamp(20px, 5vw, 48px);
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink-base);
+      border-bottom: 1px solid rgba(10, 10, 9, .08);
+      z-index: 10;
+    }
+    header.chrome .mark { display: flex; align-items: center; gap: 10px; }
+    header.chrome .mark::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink-base); display: inline-block;
+    }
+    header.chrome a { transition: letter-spacing 240ms ease; }
+    header.chrome a:hover, header.chrome a:focus-visible {
+      letter-spacing: .3em;
+    }
+
+    /* ─── article container ─────────────────────────── */
+    main.transmission {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: clamp(48px, 12vh, 120px) clamp(20px, 5vw, 48px) clamp(64px, 16vh, 160px);
+    }
+
+    /* ─── article meta ──────────────────────────────── */
+    .meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 56px;
+      display: flex; flex-wrap: wrap; gap: 18px;
+    }
+    .meta .num { color: var(--ink-base); }
+    .meta .dot { color: var(--ink-mute); opacity: .55; }
+
+    /* ─── title ─────────────────────────────────────── */
+    h1.title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(44px, 7vw, 72px);
+      line-height: 1.02;
+      letter-spacing: -.01em;
+      color: var(--ink-base);
+      margin-bottom: 20px;
+    }
+    .subtitle {
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 72px;
+    }
+
+    /* ─── body ──────────────────────────────────────── */
+    .body p {
+      margin-bottom: 1.4em;
+    }
+    .body p + p { margin-top: 0; }
+    .body em { font-style: italic; }
+    .body strong { font-weight: 700; }
+    .body .lift {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(28px, 4.2vw, 44px);
+      line-height: 1.12;
+      color: var(--ink-base);
+      margin: 56px 0;
+      padding-left: 0;
+      border: 0;
+    }
+    .body .lift em { font-style: italic; }
+
+    /* drop cap on first paragraph */
+    .body > p.first::first-letter {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 5em;
+      line-height: .85;
+      float: left;
+      margin: 8px 12px 0 0;
+      color: var(--ink-base);
+    }
+
+    /* divider */
+    .divider {
+      border: 0;
+      border-top: 1px solid rgba(10, 10, 9, .12);
+      margin: 64px auto;
+      width: 64px;
+    }
+
+    /* signature */
+    .signature {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 72px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .signature span:last-child { color: var(--ink-base); }
+
+    /* ─── footer / back-to-the-world ────────────────── */
+    footer.back {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 48px) 80px;
+    }
+    footer.back a {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 0;
+      border-top: 1px solid rgba(10, 10, 9, .15);
+      border-bottom: 1px solid rgba(10, 10, 9, .15);
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink-base);
+      transition: letter-spacing 320ms ease, color 320ms ease;
+    }
+    footer.back a:hover, footer.back a:focus-visible {
+      letter-spacing: .3em;
+    }
+    footer.back a span:last-child { transition: transform 320ms ease; }
+    footer.back a:hover span:last-child { transform: translateX(-8px); }
+
+    .colophon {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 48px) 64px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+
+    /* ─── focus visible ─────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--ink-base);
+      outline-offset: 4px;
+      border-radius: 1px;
+    }
+
+    /* ─── responsive ────────────────────────────────── */
+    @media (max-width: 480px) {
+      body { font-size: 18px; line-height: 1.6; }
+      .body > p.first::first-letter { font-size: 4em; }
+      header.chrome { padding: 18px 20px; font-size: 10px; }
+    }
+
+    /* ─── reduced motion ────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="chrome">
+    <a href="index.html" class="mark" aria-label="back to mvxworld">mvxworld</a>
+    <a href="index.html">← back to the world</a>
+  </header>
+
+  <main class="transmission">
+    <article>
+      <div class="meta">
+        <span class="num">transmission 001</span>
+        <span class="dot">·</span>
+        <time datetime="2026-04-27">2026 · 04 · 27</time>
+        <span class="dot">·</span>
+        <span>filed under manifesto</span>
+        <span class="dot">·</span>
+        <span>frequency mvx</span>
+      </div>
+
+      <h1 class="title">the intersection.</h1>
+      <p class="subtitle">a manifesto, in one breath.</p>
+
+      <div class="body">
+        <p class="first">
+          I am not a designer. I am not a coder. I am not an entrepreneur.
+          I am the <em>intersection</em>.
+        </p>
+
+        <p>
+          From building forts in the backyard to building worlds online.
+          From Minecraft servers to media campaigns. The throughline was always the
+          same: make things, and make them feel like something.
+        </p>
+
+        <p>
+          Forts taught spatial design before I had the word for it. Minecraft taught
+          environment, system, monetization. YouTube taught media literacy by accident.
+          Graffiti, fashion, tattoos taught that identity is a public statement, not
+          a private feeling. Servers and ranks taught interface and economy. Then came
+          the websites, the campaigns, Blender, Three.js — and at some point the
+          tools stopped being separate disciplines and started being a single language.
+        </p>
+
+        <blockquote class="lift">
+          most designers can make things <em>look</em> good. far fewer understand
+          internet culture, gaming psychology, community mechanics —
+          the language of the online world.
+        </blockquote>
+
+        <p>
+          That is the unfair advantage. Not the software. Not the trend cycles.
+          The fact that the medium and I were raised together.
+        </p>
+
+        <p>
+          Design earns cash now. Brand builds future equity. Tech scales both.
+          The formula is simple. The execution is a life's work.
+        </p>
+
+        <hr class="divider" aria-hidden="true">
+
+        <p>
+          This site is not a portfolio. It is not a CV. It is the archive — a personal
+          universe that grows one room at a time, and a record of someone who decided,
+          at 23, to stop apologizing for being good at three things at once.
+        </p>
+
+        <p>
+          Welcome inside. Stay as long as you want. The door doesn't lock.
+        </p>
+      </div>
+
+      <div class="signature">
+        <span>— tjbz</span>
+        <span>mvxworld · doc 001</span>
+      </div>
+    </article>
+  </main>
+
+  <footer class="back">
+    <a href="index.html" data-cursor>
+      <span>← return to the world</span>
+      <span>mvxworld</span>
+    </a>
+  </footer>
+
+  <div class="colophon">
+    <span>set in cormorant garamond + ibm plex mono</span>
+    <span>amsterdam · 52.3676° n 4.9041° e</span>
+  </div>
+
+</body>
+</html>
