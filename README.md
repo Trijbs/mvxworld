@@ -31,6 +31,9 @@ mvxworld/
 ├── index.html        the main world         (dark, atmospheric, 5 rooms)
 ├── post.html         transmission 001       (light, narrow, the manifesto)
 ├── lore.html         the lore               (dark poster, 6 panels, scroll-driven)
+├── posts/            future transmissions   (002 onward live here)
+├── _studio/          local authoring tool   (gitignored — never deploys)
+├── _transmissie/     online authoring tool  (gated, deployed at obscure path)
 ├── tokens.css        design system tokens   (one source of truth)
 ├── PLAN.md           research + thinking    (read before iterating)
 ├── README.md         this file
@@ -217,6 +220,79 @@ OUTPUT:       single HTML file, embedded CSS + JS, production-ready,
 ```
 
 ---
+
+## the studio — writing transmissions
+
+Two authoring tools, one workflow.
+
+### local studio (the primary one)
+
+Path: `_studio/index.html` · gitignored · never deploys.
+
+To use: open it locally — either double-click the file, or for a cleaner experience run a local server from the project root and visit `http://localhost:8080/_studio/`:
+
+```bash
+cd "/Users/trijbs/Documents/Claude/Projects/mvxworld-art (1)"
+python3 -m http.server 8080
+# then visit: http://localhost:8080/_studio/
+```
+
+The studio is a split-screen editor: form on the left, live preview on the right. Fill the fields, write the body, watch the right pane update. When the post reads right, hit one of three buttons:
+
+- **Copy post HTML** — copies a complete production-ready HTML document to your clipboard. Save it as `posts/{NN}-{slug}.html` (the studio shows you the exact filename).
+- **Copy index card** — copies the snippet that replaces the "latest transmission" block on `index.html`.
+- **Download .html file** — saves a `.html` directly with the right filename. Drop it into `posts/`.
+
+The body uses simple syntax: paragraphs separated by blank lines, `*asterisks*` for italic, `[LIFT]…[/LIFT]` for the big italic pull quote, `---` on its own line for a divider. Drop cap is automatic on the first paragraph.
+
+### online studio (the road backup)
+
+Path on the live site: `https://mvxworld.art/_transmissie/console.html`.
+
+`noindex,nofollow` so search engines skip it. Not linked from anywhere. Anyone navigating directly hits a passphrase prompt — wrong answer just shows static, never confirms anything exists. Same form and outputs as the local studio, single-column UI tuned for narrow screens.
+
+### setting up the online studio passphrase
+
+The online studio ships locked. To activate it:
+
+1. Open the **local studio** (`_studio/index.html`) on your Mac.
+2. Scroll to **set the online studio passphrase** at the bottom of the form.
+3. Type a phrase only you know — make it memorable, not a password manager string. The studio runs SHA-256 on it client-side.
+4. The hash auto-copies to your clipboard.
+5. Open `_transmissie/console.html` in your editor. Find the line:
+   ```js
+   const FREQUENCY_HASH = "REPLACE_WITH_YOUR_OWN_SHA256_HASH";
+   ```
+6. Paste your hash inside the quotes. Save, commit, push.
+
+The phrase itself is never stored anywhere — only the hash. Even with the source of `_transmissie/console.html`, an attacker would need to brute-force or guess the phrase. So pick something with at least three uncommon words, no common dictionary phrases.
+
+### the publish workflow
+
+Once the studios are live, posting transmission 002 is:
+
+```bash
+# 1. write — in either studio. copy the post HTML.
+
+# 2. save the post HTML to the right path
+#    (the studio's filename hint says exactly where, e.g. posts/002-foo.html)
+
+# 3. paste the index-card snippet over room 05 in index.html
+#    (find <!-- room 05 — latest transmission --> and replace the inner blocks)
+
+# 4. ship
+git add .
+git commit -m "transmission 002 — {title}"
+git push
+```
+
+GitHub Pages redeploys in ~30 seconds. The new room is live.
+
+### privacy model — the honest version
+
+- **Local studio:** truly private. Gitignored. Never leaves the Mac. There is no scenario where readers see this.
+- **Online studio:** "good enough" private. Lives in a public repo at an obscure path with a passphrase gate. A determined snoop reading the repo file tree can find the path, but can't unlock it without your passphrase. The gate is client-side and bypassable in DevTools by reading the DOM directly — but the editor doesn't reveal anything sensitive (no drafts, no API keys, no real auth). Worst case: someone bypasses and uses the editor to *generate* a post HTML — but they can't push it to your repo without GitHub auth.
+- If you ever want true online privacy: make the repo private and switch hosting to Cloudflare Pages (free for private repos; GitHub Pages requires Pro).
 
 ## the rule
 

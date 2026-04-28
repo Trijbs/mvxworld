@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="referrer" content="no-referrer">
+
+  <title>—</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a09'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    a { color: inherit; }
+
+    /* ── gate ────────────────────────────── */
+    .gate {
+      min-height: 100vh; min-height: 100dvh;
+      display: grid; place-items: center;
+      padding: 24px;
+      transition: opacity 320ms ease;
+    }
+    .gate.unlocked { opacity: 0; pointer-events: none; }
+    .gate-inner { max-width: 420px; width: 100%; }
+    .static-noise {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .26em;
+      color: var(--mute);
+      text-align: center;
+      margin-bottom: 32px;
+      animation: flicker 4s steps(8, end) infinite;
+    }
+    @keyframes flicker { 0%, 92%, 100% { opacity: 1; } 95% { opacity: .3; } }
+    .prompt {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 56px;
+      line-height: 1;
+      color: var(--paper);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .prompt em { color: var(--acid); }
+    .gate-input {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(245, 243, 238, .22);
+      padding: 14px 0;
+      font-family: var(--mono);
+      font-size: 16px;
+      letter-spacing: .12em;
+      color: var(--paper);
+      text-align: center;
+      outline: none;
+      transition: border-color 240ms ease;
+    }
+    .gate-input:focus { border-color: var(--acid); }
+    .gate-input.wrong {
+      border-color: var(--burn);
+      animation: shake .4s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .gate-hint {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-top: 24px;
+      min-height: 14px;
+    }
+    .gate-config {
+      display: none;
+      margin-top: 32px;
+      padding: 16px;
+      border: 1px dashed var(--burn);
+      color: var(--burn);
+      font-size: 11px;
+      line-height: 1.6;
+      letter-spacing: .04em;
+    }
+    .gate-config code {
+      background: rgba(255, 77, 28, .1);
+      color: var(--paper);
+      padding: 2px 6px;
+      font-size: 11px;
+      word-break: break-all;
+    }
+    .gate-config.shown { display: block; }
+
+    /* ── editor (revealed after unlock) ── */
+    .editor { display: none; padding: 24px; max-width: 720px; margin: 0 auto; opacity: 0; transition: opacity 480ms ease; }
+    .editor.shown { display: block; opacity: 1; }
+
+    .head { margin-bottom: 24px; padding-bottom: 24px; border-bottom: var(--line); }
+    .head .mark {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--mute);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .head .mark::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--acid);
+    }
+    .head .mark .acid { color: var(--acid); }
+    .head h1 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 36px;
+      line-height: 1;
+      color: var(--paper);
+      margin-top: 12px;
+    }
+    .head h1 em { color: var(--acid); }
+
+    .group { margin-bottom: 16px; }
+    .group--row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .group--triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(245, 243, 238, .18);
+      padding: 8px 0;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--paper);
+      outline: none;
+      transition: border-color 200ms ease;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--acid); }
+    input.serif { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 19px; }
+    textarea { resize: vertical; min-height: 280px; line-height: 1.5; }
+    select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 5' fill='%237a7870'%3E%3Cpath d='M0 0l4 5 4-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 4px center; padding-right: 18px; }
+    select option { background: var(--ink-surface); color: var(--paper); }
+
+    .syntax { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 6px; line-height: 1.6; }
+    .syntax code { background: rgba(200, 255, 0, .08); color: var(--acid); padding: 1px 4px; }
+
+    /* formatting toolbar */
+    .fmt-bar { display: flex; align-items: center; gap: 2px; margin-bottom: 6px; padding: 4px; background: var(--ink-surface); border: 1px solid rgba(245, 243, 238, .08); }
+    .fmt-bar button { flex: 0 0 auto; width: 32px; height: 32px; background: transparent; border: 0; color: var(--mute); font-family: var(--mono); font-size: 13px; cursor: pointer; transition: color 160ms ease, background 160ms ease; display: grid; place-items: center; }
+    .fmt-bar button:hover, .fmt-bar button:focus-visible { color: var(--acid); background: rgba(200, 255, 0, .08); outline: none; }
+    .fmt-bar button:active { background: rgba(200, 255, 0, .18); }
+    .fmt-bar .b { font-weight: 700; }
+    .fmt-bar .it { font-style: italic; font-family: var(--serif); font-size: 16px; font-weight: 500; }
+    .fmt-bar .lift-btn { font-family: var(--serif); font-style: italic; font-size: 18px; }
+    .fmt-bar .sep { width: 1px; height: 18px; background: rgba(245, 243, 238, .14); margin: 0 4px; }
+    .fmt-bar .keys { margin-left: auto; align-self: center; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--mute); padding: 0 6px; text-transform: uppercase; }
+    @media (max-width: 480px) { .fmt-bar .keys { display: none; } }
+
+    .filename { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--paper); margin: 24px 0 12px; padding: 10px 12px; background: rgba(200, 255, 0, .06); border-left: 2px solid var(--acid); word-break: break-all; }
+    .filename b { color: var(--acid); font-weight: 500; }
+
+    button.action {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      width: 100%; padding: 14px 16px; margin-bottom: 8px;
+      background: var(--ink-surface);
+      border: 1px solid rgba(245, 243, 238, .12);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 200ms ease, color 200ms ease;
+    }
+    button.action:hover, button.action:focus-visible { border-color: var(--acid); color: var(--acid); }
+    .signoff { margin-top: 32px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
+    .signoff a { color: var(--mute); transition: color 240ms ease; }
+    .signoff a:hover { color: var(--acid); }
+
+    /* draft status bar */
+    .draft-status { display: flex; justify-content: space-between; align-items: center; margin: 0 0 20px 0; padding: 8px 12px; background: rgba(245, 243, 238, .03); border: 1px solid rgba(245, 243, 238, .06); font-family: var(--mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
+    .draft-status .indicator { display: flex; align-items: center; gap: 8px; }
+    .draft-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mute); transition: background 240ms ease; }
+    .draft-status.saved .dot { background: var(--acid); }
+    .draft-status.saving .dot { background: var(--acid); animation: blip 0.6s ease; }
+    @keyframes blip { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: .35; } }
+    .draft-status button { background: transparent; border: 0; color: var(--mute); font: inherit; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; transition: color 200ms ease, letter-spacing 200ms ease; }
+    .draft-status button:hover, .draft-status button:focus-visible { color: var(--burn); letter-spacing: .26em; outline: none; }
+
+    .toast { position: fixed; top: 16px; right: 16px; padding: 10px 14px; background: var(--acid); color: var(--ink-base); font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; transform: translateY(-20px); opacity: 0; transition: opacity 200ms, transform 200ms; z-index: 100; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <!-- ── PASSPHRASE GATE ── -->
+  <section class="gate" id="gate">
+    <div class="gate-inner">
+      <div class="static-noise">— transmission requires authorization —</div>
+      <h1 class="prompt"><em>frequency</em>?</h1>
+      <input id="gate-input" class="gate-input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="·  ·  ·  ·  ·  ·  ·  ·">
+      <div class="gate-hint" id="gate-hint">enter to broadcast</div>
+
+      <div class="gate-config" id="gate-config">
+        <strong>this console isn't configured.</strong><br><br>
+        open <code>_studio/index.html</code> on your mac, scroll to the <em>set the online studio passphrase</em> tool, generate a SHA-256 hash, and paste it into this file at the line marked <code>FREQUENCY_HASH = …</code>. commit and push. then come back here.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EDITOR ── -->
+  <section class="editor" id="editor">
+    <div class="head">
+      <div class="mark">the <span class="acid">studio</span> · console</div>
+      <h1>write the next <em>transmission</em>.</h1>
+    </div>
+
+    <div class="draft-status" id="draft-status">
+      <span class="indicator">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="draft-status-text">no draft yet</span>
+      </span>
+      <button type="button" id="clear-draft">discard draft</button>
+    </div>
+
+    <div class="group group--triple">
+      <div>
+        <label for="num">#</label>
+        <input id="num" type="text" value="002">
+      </div>
+      <div>
+        <label for="date">date</label>
+        <input id="date" type="date">
+      </div>
+      <div>
+        <label for="length">length</label>
+        <input id="length" type="text" placeholder="3 min">
+      </div>
+    </div>
+
+    <div class="group">
+      <label for="title">title</label>
+      <input id="title" class="serif" type="text" placeholder="the next thought." autocomplete="off">
+    </div>
+
+    <div class="group">
+      <label for="subtitle">subtitle</label>
+      <input id="subtitle" type="text" placeholder="a thought, in one breath." autocomplete="off">
+    </div>
+
+    <div class="group">
+      <label for="slug">slug</label>
+      <input id="slug" type="text" placeholder="the-next-thought" autocomplete="off">
+    </div>
+
+    <div class="group group--row">
+      <div>
+        <label for="filed">filed under</label>
+        <select id="filed">
+          <option value="manifesto">manifesto</option>
+          <option value="dispatch" selected>dispatch</option>
+          <option value="study">study</option>
+          <option value="drop">drop</option>
+          <option value="lore">lore</option>
+          <option value="signal">signal</option>
+        </select>
+      </div>
+      <div>
+        <label for="freq">frequency</label>
+        <select id="freq">
+          <option value="MVX" selected>MVX</option>
+          <option value="tjbz">tjbz</option>
+          <option value="eyew">eyew</option>
+          <option value="hyptc">hyptc</option>
+          <option value="TriButer">TriButer</option>
+          <option value="qPathetic">qPathetic</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="group">
+      <label for="body">body</label>
+      <div class="fmt-bar" role="toolbar" aria-label="formatting">
+        <button type="button" data-fmt="bold" class="b" title="bold (⌘B)" aria-label="bold">B</button>
+        <button type="button" data-fmt="italic" class="it" title="italic (⌘I)" aria-label="italic">i</button>
+        <span class="sep" aria-hidden="true"></span>
+        <button type="button" data-fmt="lift" class="lift-btn" title="lift quote (⌘⇧L)" aria-label="lift quote">"</button>
+        <button type="button" data-fmt="divider" title="divider" aria-label="divider">—</button>
+        <span class="sep" aria-hidden="true"></span>
+        <button type="button" data-fmt="break" title="paragraph break (⌘↵)" aria-label="paragraph break">¶</button>
+        <span class="keys">⌘B · ⌘I · ⌘⇧L</span>
+      </div>
+      <textarea id="body" placeholder="paragraphs separated by blank lines.
+
+select text, hit ⌘B for **bold** or ⌘I for *italic*.
+
+[LIFT]a paragraph in lift becomes the big italic quote.[/LIFT]
+
+--- on its own line for divider. drop cap is automatic on the first paragraph."></textarea>
+      <p class="syntax"><code>blank line</code> · <code>**bold**</code> · <code>*italic*</code> · <code>[LIFT]</code> · <code>---</code></p>
+    </div>
+
+    <div class="filename">
+      <b>filename:</b> <span id="fileout">posts/002-the-next-thought.html</span>
+    </div>
+
+    <button class="action" id="copy-post"><span>copy post HTML</span><span>↗</span></button>
+    <button class="action" id="copy-card"><span>copy index card snippet</span><span>↗</span></button>
+    <button class="action" id="download-post"><span>download .html file</span><span>↓</span></button>
+
+    <div class="signoff">
+      <a href="../index.html">← back to mvxworld</a> &nbsp; · &nbsp; signal closes when tab closes
+    </div>
+  </section>
+
+  <script>
+    /* ─────────────────────────────────────────────────────────
+       FREQUENCY_HASH — the SHA-256 hash of your passphrase.
+       to set: open _studio/index.html on your mac, use the
+       hash generator, paste the result here, commit, push.
+       leave as the placeholder string until configured.
+       ───────────────────────────────────────────────────────── */
+    const FREQUENCY_HASH = "ec51e69e52dff050833027e5c74a0bd3d1137c929ddad86aee9bf5c2f0807acc";
+
+    /* ── helpers ─────────────────────────── */
+    const $ = (id) => document.getElementById(id);
+    const today = () => new Date().toISOString().slice(0, 10);
+    const dateLabel = (iso) => iso ? iso.split('-').join(' · ') : '— · — · —';
+    const slugify = (s) => (s || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+    const escapeHtml = (s) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    function isConfigured() {
+      return /^[0-9a-f]{64}$/i.test(FREQUENCY_HASH);
+    }
+
+    async function sha256(s) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    /* ── gate logic ──────────────────────── */
+    if (!isConfigured()) {
+      $('gate-config').classList.add('shown');
+      $('gate-input').disabled = true;
+    }
+
+    async function tryUnlock() {
+      const phrase = $('gate-input').value;
+      if (!phrase || !isConfigured()) return;
+      const hash = await sha256(phrase);
+      if (hash === FREQUENCY_HASH.toLowerCase()) {
+        $('gate').classList.add('unlocked');
+        setTimeout(() => {
+          $('gate').style.display = 'none';
+          $('editor').classList.add('shown');
+          // remember unlock for this session only
+          try { sessionStorage.setItem('mvx-studio-unlocked', '1'); } catch (e) {}
+        }, 320);
+      } else {
+        $('gate-input').classList.add('wrong');
+        $('gate-hint').textContent = 'static.';
+        setTimeout(() => {
+          $('gate-input').classList.remove('wrong');
+          $('gate-hint').textContent = 'enter to broadcast';
+          $('gate-input').value = '';
+        }, 1200);
+      }
+    }
+    $('gate-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+
+    // session-scoped auto-unlock (closes when tab closes)
+    try {
+      if (sessionStorage.getItem('mvx-studio-unlocked') === '1' && isConfigured()) {
+        $('gate').style.display = 'none';
+        $('editor').classList.add('shown');
+      }
+    } catch (e) {}
+
+    /* ── parse body to HTML ──────────────── */
+    function parseBody(text) {
+      if (!text || !text.trim()) return '<p class="first">…</p>';
+      let prepared = text.replace(/\r\n/g, '\n');
+      // isolate [LIFT]…[/LIFT] and --- onto their own blocks even if typed inline
+      prepared = prepared.replace(/\s*(\[LIFT\][\s\S]*?\[\/LIFT\])\s*/gi, '\n\n$1\n\n');
+      prepared = prepared.replace(/(^|\n)[ \t]*---[ \t]*(?=\n|$)/g, '\n\n---\n\n');
+      const blocks = prepared.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
+      let firstSeen = false;
+      return blocks.map(block => {
+        if (block === '---') return '<hr class="divider" aria-hidden="true">';
+        const liftMatch = block.match(/^\[LIFT\]([\s\S]*?)\[\/LIFT\]$/i);
+        if (liftMatch) {
+          return `<blockquote class="lift">${escapeAndItalic(liftMatch[1].trim())}</blockquote>`;
+        }
+        const isFirst = !firstSeen;
+        firstSeen = true;
+        return `<p${isFirst ? ' class="first"' : ''}>${escapeAndItalic(block)}</p>`;
+      }).join('\n        ');
+    }
+    function escapeAndItalic(s) {
+      // bold first (double asterisk) so the italic regex doesn't eat it
+      return escapeHtml(s)
+        .replace(/\*\*([^*\n][^*\n]*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+    }
+
+    /* ── data + outputs ──────────────────── */
+    function collect() {
+      return {
+        num: $('num').value.trim() || '002',
+        date: $('date').value || today(),
+        title: $('title').value.trim() || 'untitled.',
+        subtitle: $('subtitle').value.trim() || '',
+        slug: ($('slug').value.trim() || slugify($('title').value)) || 'untitled',
+        filed: $('filed').value,
+        freq: $('freq').value,
+        length: $('length').value.trim(),
+        body: $('body').value
+      };
+    }
+
+    function buildPostHTML(d) {
+      const bodyHTML = parseBody(d.body);
+      const dateNice = dateLabel(d.date);
+      // mirror of post.html structure with relative paths from posts/ folder
+      return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ebe7dc">
+  <meta name="description" content="transmission ${d.num} — ${escapeHtml(d.title)}.">
+  <meta property="og:title" content="transmission ${d.num} — ${escapeHtml(d.title)}">
+  <meta property="og:description" content="${escapeHtml(d.subtitle)}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://mvxworld.art/posts/${d.num}-${d.slug}.html">
+  <title>transmission ${d.num} — ${d.title} · mvxworld</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ebe7dc'/%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%230a0a09'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{-webkit-font-smoothing:antialiased}body{background:var(--paper-deep);color:var(--ink-base);font-family:var(--serif);font-weight:400;font-size:19px;line-height:1.62;min-height:100vh}a{color:inherit;text-decoration:none}header.chrome{position:sticky;top:0;background:var(--paper-deep);padding:24px clamp(20px,5vw,48px);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-base);border-bottom:1px solid rgba(10,10,9,.08);z-index:10}header.chrome .mark{display:flex;align-items:center;gap:10px}header.chrome .mark::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink-base);display:inline-block}header.chrome a{transition:letter-spacing 240ms ease}header.chrome a:hover,header.chrome a:focus-visible{letter-spacing:.3em}main.transmission{max-width:640px;margin:0 auto;padding:clamp(48px,12vh,120px) clamp(20px,5vw,48px) clamp(64px,16vh,160px)}.meta{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:56px;display:flex;flex-wrap:wrap;gap:18px}.meta .num{color:var(--ink-base)}.meta .dot{color:var(--ink-mute);opacity:.55}h1.title{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(44px,7vw,72px);line-height:1.02;letter-spacing:-.01em;color:var(--ink-base);margin-bottom:20px}.subtitle{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:72px}.body p{margin-bottom:1.4em}.body em{font-style:italic}.body .lift{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(28px,4.2vw,44px);line-height:1.12;color:var(--ink-base);margin:56px 0;padding:0;border:0}.body>p.first::first-letter{font-family:var(--serif);font-style:italic;font-weight:500;font-size:5em;line-height:.85;float:left;margin:8px 12px 0 0;color:var(--ink-base)}.divider{border:0;border-top:1px solid rgba(10,10,9,.12);margin:64px auto;width:64px}.signature{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mute);margin-top:72px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}.signature span:last-child{color:var(--ink-base)}footer.back{max-width:640px;margin:0 auto;padding:0 clamp(20px,5vw,48px) 80px}footer.back a{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-top:1px solid rgba(10,10,9,.15);border-bottom:1px solid rgba(10,10,9,.15);font-family:var(--mono);font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-base);transition:letter-spacing 320ms ease}footer.back a:hover{letter-spacing:.3em}footer.back a span:last-child{transition:transform 320ms ease}footer.back a:hover span:last-child{transform:translateX(-8px)}.colophon{max-width:640px;margin:0 auto;padding:0 clamp(20px,5vw,48px) 64px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mute);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}.veil{position:fixed;inset:0;background:var(--ink-base);z-index:9000;pointer-events:none;opacity:1;transition:opacity 320ms ease}.veil.gone{opacity:0}.veil.coming{opacity:1;pointer-events:auto}@media (prefers-reduced-motion:reduce){.veil{display:none}*{transition:none!important;animation:none!important}}:focus-visible{outline:2px solid var(--ink-base);outline-offset:4px;border-radius:1px}@media (max-width:480px){body{font-size:18px;line-height:1.6}.body>p.first::first-letter{font-size:4em}header.chrome{padding:18px 20px;font-size:10px}}
+  </style>
+</head>
+<body>
+  <div class="veil" aria-hidden="true"></div>
+  <header class="chrome">
+    <a href="../index.html" class="mark" data-internal>mvxworld</a>
+    <a href="../index.html" data-internal>← back to the world</a>
+  </header>
+  <main class="transmission">
+    <article>
+      <div class="meta">
+        <span class="num">transmission ${d.num}</span>
+        <span class="dot">·</span>
+        <time datetime="${d.date}">${dateNice}</time>
+        <span class="dot">·</span>
+        <span>filed under ${escapeHtml(d.filed)}</span>
+        <span class="dot">·</span>
+        <span>frequency ${escapeHtml(d.freq)}</span>
+      </div>
+      <h1 class="title">${escapeHtml(d.title)}</h1>
+      <p class="subtitle">${escapeHtml(d.subtitle)}</p>
+      <div class="body">
+        ${bodyHTML}
+      </div>
+      <div class="signature">
+        <span>— tjbz</span>
+        <span>mvxworld · doc ${d.num}</span>
+      </div>
+    </article>
+  </main>
+  <footer class="back">
+    <a href="../index.html" data-internal>
+      <span>← return to the world</span>
+      <span>mvxworld</span>
+    </a>
+  </footer>
+  <div class="colophon">
+    <span>set in cormorant garamond + ibm plex mono</span>
+    <span><a href="../lore.html" data-internal>also: the lore →</a></span>
+    <span>amsterdam · 52.3676° n 4.9041° e</span>
+  </div>
+  <script>
+    (function(){var v=document.querySelector('.veil');if(!v)return;requestAnimationFrame(function(){v.classList.add('gone')});if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.addEventListener('click',function(e){var a=e.target.closest('a[data-internal]');if(!a)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target==='_blank')return;var h=a.getAttribute('href');if(!h||h.startsWith('#'))return;e.preventDefault();v.classList.remove('gone');v.classList.add('coming');setTimeout(function(){window.location.href=h},320)})})();
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function buildCardSnippet(d) {
+      return `<!-- replace inside room 05 (.latest) of index.html -->
+<div class="latest-meta">
+  <span class="field">filed under <span>· ${escapeHtml(d.filed)}</span></span>
+  <span class="field">frequency <span>· ${escapeHtml(d.freq)}</span></span>
+  <span class="field">length <span>· ${escapeHtml(d.length || '—')}</span></span>
+  <span class="field">status <span>· broadcast</span></span>
+</div>
+<a class="latest-card" href="posts/${d.num}-${d.slug}.html" data-cursor data-internal>
+  <div class="latest-num">${d.num} · ${dateLabel(d.date)}</div>
+  <h2 class="latest-title">${escapeHtml(d.title)}</h2>
+  <div class="latest-foot">
+    <span>read transmission</span>
+    <span>→</span>
+  </div>
+</a>`;
+    }
+
+    /* ── formatting toolbar + shortcuts ─── */
+    (function () {
+      const ta = $('body');
+      function replaceText(text, selStart, selEnd) {
+        ta.focus();
+        if (selStart !== undefined && selEnd !== undefined) ta.setSelectionRange(selStart, selEnd);
+        let ok = false;
+        try { ok = document.execCommand('insertText', false, text); } catch (e) {}
+        if (!ok) {
+          const s = ta.selectionStart, e = ta.selectionEnd;
+          ta.setRangeText(text, s, e, 'end');
+          ta.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: text }));
+        }
+      }
+      function wrapSel(before, after) {
+        const s = ta.selectionStart, e = ta.selectionEnd;
+        const sel = ta.value.slice(s, e);
+        replaceText(before + sel + after, s, e);
+        ta.setSelectionRange(s + before.length, s + before.length + sel.length);
+      }
+      function wrapPara(before, after) {
+        const text = ta.value;
+        let s = ta.selectionStart, e = ta.selectionEnd;
+        if (s === e) {
+          let pStart = text.lastIndexOf('\n\n', s - 1);
+          pStart = pStart === -1 ? 0 : pStart + 2;
+          let pEnd = text.indexOf('\n\n', e);
+          pEnd = pEnd === -1 ? text.length : pEnd;
+          s = pStart; e = pEnd;
+        }
+        const sel = text.slice(s, e);
+        replaceText(before + sel + after, s, e);
+        ta.setSelectionRange(s + before.length, s + before.length + sel.length);
+      }
+      function insertAt(str) {
+        const s = ta.selectionStart, e = ta.selectionEnd;
+        replaceText(str, s, e);
+        const pos = s + str.length;
+        ta.setSelectionRange(pos, pos);
+      }
+      function apply(fmt) {
+        switch (fmt) {
+          case 'bold': wrapSel('**', '**'); break;
+          case 'italic': wrapSel('*', '*'); break;
+          case 'lift': wrapPara('[LIFT]', '[/LIFT]'); break;
+          case 'divider': insertAt('\n\n---\n\n'); break;
+          case 'break': insertAt('\n\n'); break;
+        }
+      }
+      document.querySelectorAll('.fmt-bar [data-fmt]').forEach(btn => {
+        btn.addEventListener('mousedown', (e) => { e.preventDefault(); });
+        btn.addEventListener('click', (e) => { e.preventDefault(); apply(btn.dataset.fmt); });
+      });
+      ta.addEventListener('keydown', (e) => {
+        if (!(e.metaKey || e.ctrlKey)) return;
+        const k = e.key.toLowerCase();
+        // explicitly let native shortcuts pass through
+        if (['c', 'v', 'x', 'z', 'y', 'a'].includes(k)) return;
+        if (k === 'b') { e.preventDefault(); apply('bold'); }
+        else if (k === 'i') { e.preventDefault(); apply('italic'); }
+        else if (k === 'l' && e.shiftKey) { e.preventDefault(); apply('lift'); }
+        else if (k === 'enter') { e.preventDefault(); apply('break'); }
+      });
+    })();
+
+    /* ── ui wiring ───────────────────────── */
+    function refresh() {
+      const d = collect();
+      $('fileout').textContent = `posts/${d.num}-${d.slug}.html`;
+    }
+
+    /* ── draft persistence (localStorage, scoped per origin) ── */
+    const DRAFT_KEY = 'mvxworld-studio-draft-v1';
+    const FIELDS = ['num', 'date', 'title', 'subtitle', 'slug', 'filed', 'freq', 'length', 'body'];
+    let saveTimer = null, lastSavedAt = null;
+
+    function relTime(ts) {
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 5) return 'just now';
+      if (s < 60) return s + 's ago';
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + 'm ago';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + 'h ago';
+      return Math.floor(h / 24) + 'd ago';
+    }
+    function setStatus(state, text) {
+      const bar = $('draft-status');
+      if (!bar) return;
+      bar.classList.remove('saved', 'saving');
+      if (state) bar.classList.add(state);
+      $('draft-status-text').textContent = text;
+    }
+    function tickStatus() {
+      if (lastSavedAt) setStatus('saved', 'draft saved · ' + relTime(lastSavedAt));
+    }
+    function saveDraft() {
+      const draft = { savedAt: Date.now(), slugTouched: $('slug').dataset.touched === '1' };
+      FIELDS.forEach(id => { draft[id] = $(id).value; });
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        lastSavedAt = draft.savedAt;
+        setStatus('saving', 'saving…');
+        setTimeout(tickStatus, 280);
+      } catch (e) { setStatus(null, 'storage unavailable'); }
+    }
+    function loadDraft() {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return false;
+        const d = JSON.parse(raw);
+        FIELDS.forEach(id => { if (d[id] !== undefined) $(id).value = d[id]; });
+        if (d.slugTouched) $('slug').dataset.touched = '1';
+        lastSavedAt = d.savedAt || null;
+        if (lastSavedAt) setStatus('saved', 'draft restored · ' + relTime(lastSavedAt));
+        return true;
+      } catch (e) { return false; }
+    }
+    function clearDraft() {
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+      FIELDS.forEach(id => {
+        const el = $(id);
+        if (el.tagName === 'SELECT') { el.selectedIndex = 0; return; }
+        el.value = '';
+      });
+      $('num').value = '002';
+      $('date').value = today();
+      $('slug').dataset.touched = '';
+      lastSavedAt = null;
+      setStatus(null, 'no draft yet');
+      refresh();
+    }
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveDraft, 300);
+    }
+
+    /* ── load draft + auto-fill defaults ── */
+    const restored = loadDraft();
+    if (!restored || !$('date').value) $('date').value = today();
+    if (!restored && !$('num').value) $('num').value = '002';
+
+    $('title').addEventListener('input', () => {
+      if (!$('slug').dataset.touched) $('slug').value = slugify($('title').value);
+      refresh(); scheduleSave();
+    });
+    $('slug').addEventListener('input', () => { $('slug').dataset.touched = '1'; refresh(); scheduleSave(); });
+    ['num', 'date', 'subtitle', 'filed', 'freq', 'length', 'body'].forEach(id => {
+      $(id).addEventListener('input', () => { refresh(); scheduleSave(); });
+      $(id).addEventListener('change', () => { refresh(); scheduleSave(); });
+    });
+    $('clear-draft').addEventListener('click', clearDraft);
+    setInterval(tickStatus, 30000);
+
+    function toast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1800);
+    }
+    async function copy(s) { try { await navigator.clipboard.writeText(s); return true; } catch (e) { return false; } }
+
+    $('copy-post').addEventListener('click', async () => {
+      const ok = await copy(buildPostHTML(collect()));
+      toast(ok ? 'post HTML copied' : 'copy failed');
+    });
+    $('copy-card').addEventListener('click', async () => {
+      const ok = await copy(buildCardSnippet(collect()));
+      toast(ok ? 'index card copied' : 'copy failed');
+    });
+    $('download-post').addEventListener('click', () => {
+      const d = collect();
+      const blob = new Blob([buildPostHTML(d)], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${d.num}-${d.slug}.html`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('downloaded');
+    });
+
+    refresh();
+  </script>
+
+</body>
+</html>

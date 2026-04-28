@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ebe7dc">
+  <meta name="description" content="transmission 002 — The Unfair Advantage.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="transmission 002 — The Unfair Advantage">
+  <meta property="og:description" content="a study, on internet-native as discipline.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://mvxworld.art/posts/002-the-unfair-advantage.html">
+
+  <title>transmission 002 — The Unfair Advantage · mvxworld</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ebe7dc'/%3E%3Ccircle cx='8' cy='8' r='2.5' fill='%230a0a09'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background: var(--paper-deep); color: var(--ink-base); font-family: var(--serif); font-weight: 400; font-size: 19px; line-height: 1.62; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    header.chrome { position: sticky; top: 0; background: var(--paper-deep); padding: 24px clamp(20px, 5vw, 48px); display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-base); border-bottom: 1px solid rgba(10, 10, 9, .08); z-index: 10; }
+    header.chrome .mark { display: flex; align-items: center; gap: 10px; }
+    header.chrome .mark::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-base); display: inline-block; }
+    header.chrome a { transition: letter-spacing 240ms ease; }
+    header.chrome a:hover, header.chrome a:focus-visible { letter-spacing: .3em; }
+    main.transmission { max-width: 640px; margin: 0 auto; padding: clamp(48px, 12vh, 120px) clamp(20px, 5vw, 48px) clamp(64px, 16vh, 160px); }
+    .meta { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 56px; display: flex; flex-wrap: wrap; gap: 18px; }
+    .meta .num { color: var(--ink-base); }
+    .meta .dot { color: var(--ink-mute); opacity: .55; }
+    h1.title { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: clamp(44px, 7vw, 72px); line-height: 1.02; letter-spacing: -.01em; color: var(--ink-base); margin-bottom: 20px; }
+    .subtitle { font-family: var(--mono); font-style: normal; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 72px; }
+    .body p { margin-bottom: 1.4em; }
+    .body p + p { margin-top: 0; }
+    .body em { font-style: italic; }
+    .body strong { font-weight: 700; }
+    .body .lift { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: clamp(28px, 4.2vw, 44px); line-height: 1.12; color: var(--ink-base); margin: 56px 0; padding-left: 0; border: 0; }
+    .body .lift em { font-style: italic; }
+    .body > p.first::first-letter { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 5em; line-height: .85; float: left; margin: 8px 12px 0 0; color: var(--ink-base); }
+    .divider { border: 0; border-top: 1px solid rgba(10, 10, 9, .12); margin: 64px auto; width: 64px; }
+    .signature { font-family: var(--mono); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-mute); margin-top: 72px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .signature span:last-child { color: var(--ink-base); }
+    footer.back { max-width: 640px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 48px) 80px; }
+    footer.back a { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; border-top: 1px solid rgba(10, 10, 9, .15); border-bottom: 1px solid rgba(10, 10, 9, .15); font-family: var(--mono); font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-base); transition: letter-spacing 320ms ease, color 320ms ease; }
+    footer.back a:hover, footer.back a:focus-visible { letter-spacing: .3em; }
+    footer.back a span:last-child { transition: transform 320ms ease; }
+    footer.back a:hover span:last-child { transform: translateX(-8px); }
+    .colophon { max-width: 640px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 48px) 64px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-mute); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .veil { position: fixed; inset: 0; background: var(--ink-base); z-index: 9000; pointer-events: none; opacity: 1; transition: opacity 320ms ease; }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } * { transition: none !important; animation: none !important; } }
+    :focus-visible { outline: 2px solid var(--ink-base); outline-offset: 4px; border-radius: 1px; }
+    @media (max-width: 480px) { body { font-size: 18px; line-height: 1.6; } .body > p.first::first-letter { font-size: 4em; } header.chrome { padding: 18px 20px; font-size: 10px; } }
+  </style>
+</head>
+<body>
+
+  <div class="veil" aria-hidden="true"></div>
+
+  <header class="chrome">
+    <a href="../index.html" class="mark" aria-label="back to mvxworld" data-internal>mvxworld</a>
+    <a href="../index.html" data-internal>← back to the world</a>
+  </header>
+
+  <main class="transmission">
+    <article>
+      <div class="meta">
+        <span class="num">transmission 002</span>
+        <span class="dot">·</span>
+        <time datetime="2026-04-28">2026 · 04 · 28</time>
+        <span class="dot">·</span>
+        <span>filed under study</span>
+        <span class="dot">·</span>
+        <span>frequency tjbz</span>
+      </div>
+
+      <h1 class="title">The Unfair Advantage</h1>
+      <p class="subtitle">a study, on internet-native as discipline.</p>
+
+      <div class="body">
+        <p class="first">Internet-native isn't a generation. It's a design discipline. Being born after 2000 doesn't grant you the advantage — having actually run the systems does.</p>
+        <p><strong>the shape of the argument</strong><br>Most designers use the internet. Far fewer understand its grammar. The grammar is specific and almost never taught: that <strong>identity is plural</strong> (alts aren't deception, they're frequency separation; MVX / tjbz / eyew is a feature) that aesthetics coexist rather than compose into one brand (a moody account and a shitpost account are the same person) that <strong>communities form around mechanics</strong>, not values (rank trees, scarcity drops, parasocial proximity) that <strong>content has layers</strong> — surface, lore, meta, in-joke that posts have half-lives, <strong>drops have moments, eras have anthems that status is nonlinear</strong> and reputation moves between platforms.</p>
+        <p>Designers who learned this from books got it later, partial, often wrong. Designers who built minecraft servers learned it native — rank economies, plugin UI, retention mechanics, the whole thing. Same for thumbnail kids on YouTube, fashion-flip Instagram, fandom Tumblr in 2014. The "schooling" was running the systems.</p>
+        <p><strong>The punchline </strong><br>But native isn't the same as good. Plenty of internet-native people are just chronically online. The advantage only counts if you do the design work to translate what you noticed. Otherwise it's just memory.</p>
+        <blockquote class="lift">the advantage isn't being from this generation.<br>it's having paid attention.</blockquote>
+      </div>
+
+      <div class="signature">
+        <span>— tjbz</span>
+        <span>mvxworld · doc 002</span>
+      </div>
+    </article>
+  </main>
+
+  <footer class="back">
+    <a href="../index.html" data-cursor data-internal>
+      <span>← return to the world</span>
+      <span>mvxworld</span>
+    </a>
+  </footer>
+
+  <div class="colophon">
+    <span>set in cormorant garamond + ibm plex mono</span>
+    <span><a href="../lore.html" data-internal>also: the lore →</a></span>
+    <span>amsterdam · 52.3676° n 4.9041° e</span>
+  </div>
+
+  <script>
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
+
+</body>
+</html>

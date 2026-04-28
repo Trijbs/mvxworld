@@ -157,7 +157,8 @@ Two pages, two distinct atmospheres. The index is dark, sparse, atmospheric. The
 - ✓ `lore.html` live — manifesto as 6-panel poster, scroll-driven, vertical roman numerals, ambient progress bar, "you are here" panel pip on desktop
 - ✓ Fade-to-black page transitions wired across index ↔ post ↔ lore
 - ✓ Cryptic frequency `TriButer` promoted from dim to active — links to `lore.html` (origin / lore handle, exactly as named)
-- ☐ Next post — when transmission 002 is written. The scaffolding (latest-card, transmissions index) can wait until there's a second post; one-card-on-the-homepage works fine for one post.
+- ✓ The studio — local authoring tool at `_studio/index.html` (gitignored, never deploys) + online backup at `_transmissie/console.html` (deployed, passphrase-gated, noindex)
+- ☐ Transmission 002 — when written. Use the studio. Posts go in `posts/{NN}-{slug}.html`.
 
 ### Phase 3 — when work exists to show
 - `work.html` (curated, opinionated — not "everything I made")
