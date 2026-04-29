@@ -31,7 +31,10 @@ mvxworld/
 ├── index.html        the main world         (dark, atmospheric, 5 rooms)
 ├── post.html         transmission 001       (light, narrow, the manifesto)
 ├── lore.html         the lore               (dark poster, 6 panels, scroll-driven)
-├── posts/            future transmissions   (002 onward live here)
+├── work.html         curated work           (dark archive, brand identity = entry 001)
+├── gallery.html      visual frequency archive (dark, large images, mono captions)
+├── posts/            transmissions 002+     (one html per transmission)
+├── img/              brand assets           (sigil, lockups, favicons, embossed)
 ├── _studio/          local authoring tool   (gitignored — never deploys)
 ├── _transmissie/     online authoring tool  (gated, deployed at obscure path)
 ├── tokens.css        design system tokens   (one source of truth)
@@ -39,7 +42,7 @@ mvxworld/
 ├── README.md         this file
 ├── CNAME             github pages custom domain → mvxworld.art
 ├── .nojekyll         tells github pages "don't process me — i'm static"
-├── .gitignore
+├── .gitignore        — also excludes CLAUDE.md, AGENTS.md, Final.png, icons.png
 └── mvxworld_plan_summary.txt   doc 001 — the original brief
 ```
 
@@ -52,6 +55,9 @@ mvxworld/
 | 00 | `index.html` | live | main world, dark archive |
 | 01 | `post.html` | live | transmission 001 — the intersection |
 | 02 | `lore.html` | live | the lore — manifesto as 6-panel poster |
+| 03 | `work.html` | live | curated work, dark archive — entry 001 = MVX brand identity system |
+| 04 | `gallery.html` | live | visual frequency archive — brand mark variants at scale |
+| 05 | `posts/002-the-unfair-advantage.html` | live | transmission 002 |
 | 03 | `work.html` | future | curated work, when work exists |
 | 04 | `gallery.html` | future | image archive |
 | 05 | `drop.html` | future | release pages for products / drops |

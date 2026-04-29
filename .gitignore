@@ -25,3 +25,14 @@ dist/
 # the studio — local-only authoring tool, never deploys
 _studio/
 _drafts/
+
+# internal agent / instruction docs — local context, not site content
+CLAUDE.md
+AGENTS.md
+
+# brand reference material — kept locally, not deployed publicly
+Final.png
+icons.png
+
+# assistant working files
+.well-known/agent-*

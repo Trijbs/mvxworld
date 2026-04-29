@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="description" content="the work — selected pieces from MVX. archive the frequencies.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="mvxworld / work">
+  <meta property="og:description" content="selected pieces. one room per discipline. one break per piece.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mvxworld.art/work.html">
+  <meta property="og:image" content="https://mvxworld.art/img/FullMark.png">
+
+  <title>work — mvxworld</title>
+
+  <link rel="icon" href="img/MVX-favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="img/MVX-favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    ::-moz-selection { background: var(--acid); color: var(--ink-base); }
+
+    /* grain overlay */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      opacity: .08; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 200px 200px;
+    }
+
+    /* page transition veil */
+    .veil {
+      position: fixed; inset: 0;
+      background: var(--ink-base);
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 320ms ease;
+    }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } }
+
+    /* top chrome */
+    .top {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: var(--easy) var(--gutter);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: var(--easy);
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    .top * { pointer-events: auto; }
+    .mark {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--paper);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mark img.mark-icon {
+      width: 22px; height: 22px; object-fit: contain;
+      animation: pulse 3.4s var(--ease) infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .mark span.tag { color: var(--mute); margin-left: 8px; }
+
+    .nav-back {
+      display: flex; gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .nav-back a { transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease); }
+    .nav-back a:hover, .nav-back a:focus-visible { color: var(--acid); letter-spacing: .22em; }
+    .nav-back a.here { color: var(--paper); }
+
+    /* hero / room intro */
+    .hero {
+      padding: calc(var(--rhythm) + 80px) var(--gutter) var(--rhythm);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .hero-meta {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+      display: flex; gap: var(--easy); flex-wrap: wrap;
+    }
+    .hero-meta .acid { color: var(--acid); }
+    .hero h1 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(56px, 12vw, 180px);
+      line-height: .9;
+      letter-spacing: -.02em;
+      color: var(--paper);
+    }
+    .hero h1 em { color: var(--acid); }
+    .hero-sub {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(20px, 2.4vw, 32px);
+      color: var(--mute);
+      margin-top: var(--easy);
+      max-width: 30ch;
+      line-height: 1.2;
+    }
+
+    /* a single work entry */
+    .entry {
+      padding: var(--rhythm) var(--gutter);
+      max-width: 1280px;
+      margin: 0 auto;
+      border-top: var(--line);
+    }
+    .entry-head {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      gap: var(--easy);
+      align-items: baseline;
+      margin-bottom: var(--roomy);
+    }
+    .entry-num {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--acid);
+    }
+    .entry-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(40px, 6vw, 84px);
+      line-height: .98;
+      letter-spacing: -.01em;
+      color: var(--paper);
+    }
+    .entry-title em { color: var(--acid); font-style: italic; }
+    .entry-year {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      text-align: right;
+    }
+
+    .entry-hero {
+      position: relative;
+      margin-bottom: var(--roomy);
+      background: var(--ink-surface);
+      border: 1px solid rgba(245, 243, 238, .04);
+      overflow: hidden;
+    }
+    .entry-hero img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .entry-hero.embossed {
+      aspect-ratio: 16 / 10;
+      display: grid; place-items: center;
+      padding: clamp(32px, 6vw, 96px);
+      background: linear-gradient(135deg, #0e0e0c 0%, #1a1a18 50%, #0e0e0c 100%);
+    }
+    .entry-hero.embossed img {
+      width: clamp(180px, 36vw, 480px);
+      height: auto;
+      filter: drop-shadow(0 10px 60px rgba(200, 255, 0, 0.06));
+    }
+
+    .entry-body {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: var(--rhythm);
+      padding-left: 100px;
+      margin-bottom: var(--rhythm);
+    }
+    .entry-body .label {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--snug);
+    }
+    .entry-body .value {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(20px, 2.2vw, 28px);
+      line-height: 1.32;
+      color: var(--paper);
+    }
+    .entry-body .value em { color: var(--acid); font-style: italic; }
+    .entry-body .specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--easy);
+    }
+    .entry-body .spec-item {
+      border-top: 1px solid rgba(245, 243, 238, .08);
+      padding-top: var(--snug);
+    }
+    .entry-body .spec-key {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    .entry-body .spec-val {
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      color: var(--paper);
+      line-height: 1.4;
+    }
+
+    /* asset grid — small variants under the hero */
+    .variants {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--snug);
+      padding-left: 100px;
+    }
+    .variant {
+      aspect-ratio: 1 / 1;
+      background: var(--ink-surface);
+      border: 1px solid rgba(245, 243, 238, .04);
+      display: grid; place-items: center;
+      padding: clamp(16px, 3vw, 32px);
+      position: relative;
+    }
+    .variant img {
+      max-width: 80%;
+      max-height: 80%;
+      object-fit: contain;
+    }
+    .variant.horizontal { aspect-ratio: 16 / 9; padding: clamp(20px, 3vw, 40px) clamp(32px, 5vw, 80px); grid-column: span 2; }
+    .variant-label {
+      position: absolute;
+      bottom: 12px; left: 12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+
+    /* the empty next-room sigil */
+    .next-room {
+      padding: var(--rhythm) var(--gutter);
+      max-width: 1280px;
+      margin: 0 auto;
+      border-top: var(--line);
+      text-align: center;
+    }
+    .next-room .num {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+    }
+    .next-room .num .acid { color: var(--acid); }
+    .next-room .text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(28px, 4vw, 56px);
+      line-height: 1.1;
+      color: var(--mute);
+      max-width: 22ch;
+      margin: 0 auto;
+    }
+    .next-room .text em { color: var(--paper); font-style: italic; }
+
+    /* footer */
+    footer.koord {
+      padding: var(--rhythm) var(--gutter) var(--easy);
+      border-top: var(--line-soft);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      align-items: end;
+    }
+    footer.koord b {
+      display: block;
+      font-weight: 400;
+      color: var(--paper);
+      margin-bottom: 6px;
+    }
+    footer.koord .right { text-align: right; }
+    footer.koord .center { text-align: center; }
+    footer.koord .acid { color: var(--acid); }
+
+    /* reveal animation */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); transition-delay: var(--delay, 0ms); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; border-radius: 1px; }
+
+    /* responsive */
+    @media (max-width: 880px) {
+      .entry-head { grid-template-columns: 1fr; gap: var(--snug); }
+      .entry-year { text-align: left; }
+      .entry-body { grid-template-columns: 1fr; gap: var(--easy); padding-left: 0; }
+      .entry-body .specs { grid-template-columns: 1fr; }
+      .variants { padding-left: 0; grid-template-columns: 1fr 1fr; }
+      .variants .variant.horizontal { grid-column: span 2; aspect-ratio: 16 / 9; }
+      footer.koord { grid-template-columns: 1fr; }
+      footer.koord .right, footer.koord .center { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .veil { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="veil" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="mark" href="index.html" data-internal>
+      <img class="mark-icon" src="img/Symbol.png" alt="" aria-hidden="true">
+      <span>mvxworld</span>
+      <span class="tag">/work</span>
+    </a>
+    <nav class="nav-back" aria-label="rooms">
+      <a href="index.html" data-internal>← world</a>
+      <a href="lore.html" data-internal>lore</a>
+      <a href="gallery.html" data-internal>gallery</a>
+      <a href="work.html" class="here" data-internal>work</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- hero -->
+    <section class="hero">
+      <div class="hero-meta reveal">
+        <span>// the work</span>
+        <span class="acid">● 1 entry</span>
+        <span>archive the frequencies</span>
+      </div>
+      <h1 class="reveal" style="--delay: 200ms">selected <em>pieces</em>.</h1>
+      <p class="hero-sub reveal" style="--delay: 400ms">
+        one room per discipline. one break per piece. expanding as the world grows.
+      </p>
+    </section>
+
+    <!-- entry 001 — MVX brand identity v1 -->
+    <article class="entry" id="brand-identity">
+      <header class="entry-head reveal">
+        <div class="entry-num">/ 001</div>
+        <h2 class="entry-title">MVX brand identity <em>system</em>.</h2>
+        <div class="entry-year">2026 · v1 · shipped</div>
+      </header>
+
+      <div class="entry-hero embossed reveal" style="--delay: 200ms">
+        <img src="img/Embossed-Metalic.png" alt="MVX sigil — embossed metallic treatment, the premium hero variant of the wordmark and angular monogram">
+      </div>
+
+      <div class="entry-body reveal" style="--delay: 300ms">
+        <div>
+          <div class="label">/ brief</div>
+          <p class="value">a full identity system for <em>mvxworld</em> sigil, wordmark, lockups, palette, typography. luxury and power, said quietly.</p>
+        </div>
+        <div class="specs">
+          <div class="spec-item">
+            <div class="spec-key">role</div>
+            <div class="spec-val">brand · system · execution</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">tagline</div>
+            <div class="spec-val">archive the frequencies.</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">deliverables</div>
+            <div class="spec-val">5 lockups · 4 file formats · favicon → app icon → embossed-metallic hero</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">type pairing</div>
+            <div class="spec-val">cormorant garamond × ibm plex mono</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">palette</div>
+            <div class="spec-val">ink · paper · acid · burn · mute</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">status</div>
+            <div class="spec-val">v1 live across the site</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants reveal" style="--delay: 400ms">
+        <div class="variant">
+          <img src="img/Symbol.png" alt="MVX symbol only — angular sigil">
+          <span class="variant-label">/ symbol</span>
+        </div>
+        <div class="variant">
+          <img src="img/FullMark.png" alt="MVX full mark — sigil with wordmark stacked">
+          <span class="variant-label">/ full mark</span>
+        </div>
+        <div class="variant horizontal">
+          <img src="img/Horizontal.png" alt="MVX horizontal lockup — sigil beside MVXWORLD wordmark">
+          <span class="variant-label">/ horizontal lockup</span>
+        </div>
+        <div class="variant">
+          <img src="img/MicroIcon.png" alt="MVX micro icon — small detailed mark">
+          <span class="variant-label">/ micro</span>
+        </div>
+        <div class="variant">
+          <img src="img/APPicon.png" alt="MVX app icon">
+          <span class="variant-label">/ app</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- the next room — left intentionally empty until there's something to put here -->
+    <section class="next-room">
+      <div class="num reveal">/ 002 &nbsp;·&nbsp; <span class="acid">in motion</span></div>
+      <p class="text reveal" style="--delay: 200ms">
+        the next piece is being <em>made</em>.
+        come back.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="koord">
+    <div>
+      <b>koordinaten</b>
+      52.3676° N · 4.9041° E
+    </div>
+    <div class="center">
+      <b>mvx<span class="acid">/</span>work</b>
+      doc 003 · selected pieces
+    </div>
+    <div class="right">
+      <b><a href="index.html" data-internal>← return to the world</a></b>
+      <span class="acid">●</span> still here
+    </div>
+  </footer>
+
+  <script>
+    /* reveal observer */
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+
+    /* fade-to-black page transitions */
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
+
+</body>
+</html>

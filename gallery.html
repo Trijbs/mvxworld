@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="description" content="the gallery — frequency archive. visual moments from MVX, presented at scale.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="mvxworld / gallery">
+  <meta property="og:description" content="frequency archive. visual moments, presented at scale.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mvxworld.art/gallery.html">
+  <meta property="og:image" content="https://mvxworld.art/img/Embossed-Metalic.png">
+
+  <title>gallery — mvxworld</title>
+
+  <link rel="icon" href="img/MVX-favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="img/MVX-favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    ::-moz-selection { background: var(--acid); color: var(--ink-base); }
+
+    /* page transition veil */
+    .veil { position: fixed; inset: 0; background: var(--ink-base); z-index: 9000; pointer-events: none; opacity: 1; transition: opacity 320ms ease; }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } }
+
+    /* grain */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      opacity: .06; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 200px 200px;
+    }
+
+    /* progress line */
+    .progress {
+      position: fixed; top: 0; left: 0; height: 1px; width: 0;
+      background: var(--acid);
+      z-index: 60;
+      will-change: width;
+      transition: width 80ms linear;
+    }
+
+    /* top chrome */
+    .top {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: var(--easy) var(--gutter);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: var(--easy);
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    .top * { pointer-events: auto; }
+    .mark {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--paper);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mark img.mark-icon {
+      width: 22px; height: 22px; object-fit: contain;
+      animation: pulse 3.4s var(--ease) infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .mark span.tag { color: var(--mute); margin-left: 8px; }
+
+    .nav-back { display: flex; gap: var(--easy); font-family: var(--mono); font-size: var(--t-meta); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+    .nav-back a { transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease); }
+    .nav-back a:hover, .nav-back a:focus-visible { color: var(--acid); letter-spacing: .22em; }
+    .nav-back a.here { color: var(--paper); }
+
+    /* hero */
+    .hero {
+      padding: calc(var(--rhythm) + 80px) var(--gutter) var(--rhythm);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .hero-meta {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+      display: flex; gap: var(--easy); flex-wrap: wrap;
+    }
+    .hero-meta .acid { color: var(--acid); }
+    .hero h1 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(56px, 12vw, 180px);
+      line-height: .9;
+      letter-spacing: -.02em;
+      color: var(--paper);
+    }
+    .hero h1 em { color: var(--acid); }
+    .hero-sub {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(20px, 2.4vw, 32px);
+      color: var(--mute);
+      margin-top: var(--easy);
+      max-width: 30ch;
+      line-height: 1.2;
+    }
+
+    /* a single piece — full-bleed-ish, generous */
+    .piece {
+      padding: var(--rhythm) var(--gutter);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .piece + .piece { border-top: 1px solid rgba(245, 243, 238, .04); }
+
+    .piece-num {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: var(--snug);
+    }
+    .piece-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1;
+      letter-spacing: -.01em;
+      color: var(--paper);
+      margin-bottom: var(--easy);
+    }
+    .piece-title em { color: var(--acid); }
+
+    .frame {
+      position: relative;
+      background: var(--ink-surface);
+      border: 1px solid rgba(245, 243, 238, .04);
+      display: grid; place-items: center;
+      padding: clamp(32px, 8vw, 120px);
+      margin-top: var(--easy);
+      margin-bottom: var(--easy);
+    }
+    .frame img {
+      width: clamp(240px, 50vw, 720px);
+      height: auto;
+      filter: drop-shadow(0 12px 80px rgba(0, 0, 0, 0.4));
+    }
+    .frame.dark {
+      background: linear-gradient(135deg, #0c0c0a 0%, #1a1a18 50%, #0c0c0a 100%);
+    }
+    .frame.tight { padding: clamp(20px, 4vw, 60px); }
+    .frame.tight img { width: clamp(160px, 30vw, 360px); }
+    .frame.wide { aspect-ratio: 21 / 9; padding: clamp(32px, 6vw, 80px); }
+    .frame.wide img { width: clamp(280px, 60vw, 900px); }
+
+    .piece-foot {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .piece-foot b { font-weight: 400; color: var(--paper); display: block; margin-bottom: 4px; }
+    .piece-foot .acid { color: var(--acid); }
+
+    /* the empty next-piece sigil */
+    .next-piece {
+      padding: var(--rhythm) var(--gutter);
+      max-width: 1280px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(245, 243, 238, .04);
+      text-align: center;
+    }
+    .next-piece .num {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: var(--easy);
+    }
+    .next-piece .num .acid { color: var(--acid); }
+    .next-piece .text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.1;
+      color: var(--mute);
+      max-width: 24ch;
+      margin: 0 auto;
+    }
+    .next-piece .text em { color: var(--paper); font-style: italic; }
+
+    /* footer */
+    footer.koord {
+      padding: var(--rhythm) var(--gutter) var(--easy);
+      border-top: var(--line-soft);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      align-items: end;
+    }
+    footer.koord b { display: block; font-weight: 400; color: var(--paper); margin-bottom: 6px; }
+    footer.koord .right { text-align: right; }
+    footer.koord .center { text-align: center; }
+    footer.koord .acid { color: var(--acid); }
+
+    /* reveal */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); transition-delay: var(--delay, 0ms); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; border-radius: 1px; }
+
+    @media (max-width: 880px) {
+      .piece-foot { grid-template-columns: 1fr; gap: var(--snug); }
+      footer.koord { grid-template-columns: 1fr; }
+      footer.koord .right, footer.koord .center { text-align: left; }
+      .frame.wide { aspect-ratio: 16 / 10; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .veil { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="veil" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="mark" href="index.html" data-internal>
+      <img class="mark-icon" src="img/Symbol.png" alt="" aria-hidden="true">
+      <span>mvxworld</span>
+      <span class="tag">/gallery</span>
+    </a>
+    <nav class="nav-back" aria-label="rooms">
+      <a href="index.html" data-internal>← world</a>
+      <a href="lore.html" data-internal>lore</a>
+      <a href="work.html" data-internal>work</a>
+      <a href="gallery.html" class="here" data-internal>gallery</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- hero -->
+    <section class="hero">
+      <div class="hero-meta reveal">
+        <span>// the gallery</span>
+        <span class="acid">● frequency archive</span>
+        <span>visual moments at scale</span>
+      </div>
+      <h1 class="reveal" style="--delay: 200ms">archive the <em>frequencies</em>.</h1>
+      <p class="hero-sub reveal" style="--delay: 400ms">
+        a slow scroll. one image at a time. every piece earns its silence.
+      </p>
+    </section>
+
+    <!-- piece 01 — embossed metallic -->
+    <article class="piece" id="p-01">
+      <div class="piece-num reveal">/ 01 &nbsp;·&nbsp; <span style="color: var(--mute);">premium hero</span></div>
+      <h2 class="piece-title reveal" style="--delay: 100ms">the sigil, <em>embossed</em>.</h2>
+      <div class="frame dark reveal" style="--delay: 200ms">
+        <img src="img/Embossed-Metalic.png" alt="MVX sigil rendered in embossed metallic, premium luxury hero treatment">
+      </div>
+      <div class="piece-foot reveal" style="--delay: 300ms">
+        <div><b>treatment</b>embossed metallic · 3D</div>
+        <div style="text-align: center;"><b>size</b>1024 × 1024</div>
+        <div style="text-align: right;"><b>use</b><span class="acid">premium contexts only</span></div>
+      </div>
+    </article>
+
+    <!-- piece 02 — symbol -->
+    <article class="piece" id="p-02">
+      <div class="piece-num reveal">/ 02 &nbsp;·&nbsp; <span style="color: var(--mute);">at rest</span></div>
+      <h2 class="piece-title reveal" style="--delay: 100ms">the symbol, <em>alone</em>.</h2>
+      <div class="frame tight reveal" style="--delay: 200ms">
+        <img src="img/SymbolTransp.png" alt="MVX angular sigil on transparent background — the mark at rest">
+      </div>
+      <div class="piece-foot reveal" style="--delay: 300ms">
+        <div><b>treatment</b>transparent · flat</div>
+        <div style="text-align: center;"><b>size</b>1080 × 1080</div>
+        <div style="text-align: right;"><b>use</b>signature on dark surfaces</div>
+      </div>
+    </article>
+
+    <!-- piece 03 — horizontal lockup -->
+    <article class="piece" id="p-03">
+      <div class="piece-num reveal">/ 03 &nbsp;·&nbsp; <span style="color: var(--mute);">horizontal</span></div>
+      <h2 class="piece-title reveal" style="--delay: 100ms">the <em>lockup</em>.</h2>
+      <div class="frame wide reveal" style="--delay: 200ms">
+        <img src="img/Horizontal.png" alt="MVX horizontal lockup — sigil beside MVXWORLD wordmark">
+      </div>
+      <div class="piece-foot reveal" style="--delay: 300ms">
+        <div><b>treatment</b>horizontal · sigil + wordmark</div>
+        <div style="text-align: center;"><b>size</b>2400 × 540</div>
+        <div style="text-align: right;"><b>use</b>banners · headers · social cards</div>
+      </div>
+    </article>
+
+    <!-- piece 04 — full mark -->
+    <article class="piece" id="p-04">
+      <div class="piece-num reveal">/ 04 &nbsp;·&nbsp; <span style="color: var(--mute);">stacked</span></div>
+      <h2 class="piece-title reveal" style="--delay: 100ms">the full <em>mark</em>.</h2>
+      <div class="frame reveal" style="--delay: 200ms">
+        <img src="img/FullMark.png" alt="MVX full mark — sigil and MVXWORLD wordmark stacked">
+      </div>
+      <div class="piece-foot reveal" style="--delay: 300ms">
+        <div><b>treatment</b>stacked · sigil over wordmark</div>
+        <div style="text-align: center;"><b>size</b>1080 × 1080</div>
+        <div style="text-align: right;"><b>use</b>profile · cover · poster</div>
+      </div>
+    </article>
+
+    <!-- next piece — empty -->
+    <section class="next-piece">
+      <div class="num reveal">/ 05 &nbsp;·&nbsp; <span class="acid">incoming</span></div>
+      <p class="text reveal" style="--delay: 200ms">
+        the next frequency hasn't been <em>tuned</em> yet.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="koord">
+    <div>
+      <b>koordinaten</b>
+      52.3676° N · 4.9041° E
+    </div>
+    <div class="center">
+      <b>mvx<span class="acid">/</span>gallery</b>
+      doc 004 · frequency archive
+    </div>
+    <div class="right">
+      <b><a href="index.html" data-internal>← return to the world</a></b>
+      <span class="acid">●</span> still here
+    </div>
+  </footer>
+
+  <script>
+    /* reveal observer */
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+
+    /* scroll progress */
+    (function () {
+      var progress = document.getElementById('progress');
+      function tick() {
+        var scrollable = (document.documentElement.scrollHeight - window.innerHeight);
+        var p = scrollable > 0 ? (window.scrollY / scrollable) : 0;
+        progress.style.width = (p * 100).toFixed(2) + '%';
+      }
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () { tick(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+      window.addEventListener('resize', tick, { passive: true });
+      tick();
+    })();
+
+    /* fade-to-black page transitions */
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
+
+</body>
+</html>

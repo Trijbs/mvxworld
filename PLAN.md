@@ -153,12 +153,32 @@ mvxworld.art/
 
 Two pages, two distinct atmospheres. The index is dark, sparse, atmospheric. The post is light, narrow, readable. The transition between them is *intentional rupture* — you click through and land somewhere fundamentally different. That's the room metaphor working: the hallway and the library are not styled the same.
 
-### Phase 2 — partly shipped 2026-04-27
+### Phase 2 — shipped 2026-04-27 / 28
 - ✓ `lore.html` live — manifesto as 6-panel poster, scroll-driven, vertical roman numerals, ambient progress bar, "you are here" panel pip on desktop
-- ✓ Fade-to-black page transitions wired across index ↔ post ↔ lore
-- ✓ Cryptic frequency `TriButer` promoted from dim to active — links to `lore.html` (origin / lore handle, exactly as named)
-- ✓ The studio — local authoring tool at `_studio/index.html` (gitignored, never deploys) + online backup at `_transmissie/console.html` (deployed, passphrase-gated, noindex)
-- ☐ Transmission 002 — when written. Use the studio. Posts go in `posts/{NN}-{slug}.html`.
+- ✓ Fade-to-black page transitions wired across all rooms
+- ✓ Cryptic frequency `TriButer` promoted from dim to active — links to `lore.html`
+- ✓ The studio — local at `_studio/index.html` (gitignored) + online at `_transmissie/console.html` (deployed, passphrase-gated, noindex). Toolbar with B/i/lift/divider, ⌘B/⌘I/⌘⇧L shortcuts, draft auto-save to localStorage, native ⌘C/V/X/Z/A pass through, undo integrates with execCommand
+- ✓ Transmission 002 — "the unfair advantage", filed under study, frequency tjbz. Lives at `posts/002-the-unfair-advantage.html`. Index card swapped to point at it.
+
+### Phase 3 — in progress 2026-04-28
+
+**Premise:** the brand identity system v1 just shipped (Final.png + icons.png + the full `img/` asset library). That's *real work* — not a meta-flex but a genuine deliverable. So phase 3 opens with two new rooms that finally have something to put in them:
+
+- ☐ `work.html` — curated work, dark archive aesthetic, opens with the brand identity reveal as work piece 001. Built so future pieces (campaigns, drops, type studies, sub-brands) slot in beneath as `.work-entry` blocks. One break-the-grid moment per piece.
+- ☐ `gallery.html` — visual archive. Seeded with the brand mark variants as the first set (Symbol, FullMark, Horizontal, Embossed-Metallic). Captions in mono caps, large image areas, dark background. The `hyptc` (hypnotic) frequency promotes from dim → links here.
+- ☐ Wiring: index nav gains `work` + `gallery` links; freqs strip promotes hyptc to active; studios update favicon path to use `img/MVX-favicon.ico` for consistency.
+
+**Deferred from phase 3:** community decision (Discord vs newsletter). Not enough audience yet to justify either, and adding a Discord link before there's a Discord room makes the site feel hollow. Decide when transmission 005 ships.
+
+**Phase 3 — definition of done:**
+- [ ] `work.html` renders, brand identity entry reads as a real piece (story, role, output)
+- [ ] `gallery.html` renders, asset variants display large, no overflow
+- [ ] Both pages match the dark archive aesthetic and use `tokens.css`
+- [ ] Internal links use `data-internal` so the fade-to-black transition works
+- [ ] Index nav updated with both rooms
+- [ ] Mobile passes — no overflow at 360px
+- [ ] Reduced-motion users get static rendering
+- [ ] Studio templates generate posts referencing the proper favicon
 
 ### Phase 3 — when work exists to show
 - `work.html` (curated, opinionated — not "everything I made")
