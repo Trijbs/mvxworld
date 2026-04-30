@@ -170,6 +170,18 @@ Two pages, two distinct atmospheres. The index is dark, sparse, atmospheric. The
 
 **Deferred from phase 3:** community decision (Discord vs newsletter). Not enough audience yet to justify either, and adding a Discord link before there's a Discord room makes the site feel hollow. Decide when transmission 005 ships.
 
+### Phase 4 — in progress 2026-04-28
+
+- ✓ Discord server set up via `_discord/setup.py` (gitignored). Spec lives in `_discord/server.yaml`. Three roles, five categories, twelve channels. Server icon set from `MVX-ProfilePic.png`.
+- ✓ `_discord/mvx_roles.py` — discord.py cog written for tjbz's tainment bot (github.com/Tribsy/tainment). Mirrors the bot's existing `reaction_roles.py` pattern. Five self-assignable frequencies (drifter / tuner / builder / scout / scribe) with mvx-palette colors. Pending integration on the user's bot machine.
+- ✓ `transmissions.html` — archive index, lists 001 + 002, room to grow. Index nav promoted from "transmission 001" to "transmissions" (plural) so it doesn't grow with each post.
+- ☐ Discord welcome content for `#rules-of-the-room` — drafted, pending tjbz finalization + posting.
+- ☐ Backfill `#transmissions` channel with posts 001 + 002 as Discord embeds.
+- ☐ Decide if/when to surface Discord invite link on the public site.
+- ☐ `drop.html` — when there's a drop to release.
+- ☐ Three.js panel — when there's a reason for it.
+- ☐ `eyew/` sub-brand path — when eyew has its own visual program.
+
 **Phase 3 — definition of done:**
 - [ ] `work.html` renders, brand identity entry reads as a real piece (story, role, output)
 - [ ] `gallery.html` renders, asset variants display large, no overflow

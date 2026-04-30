@@ -26,6 +26,9 @@ dist/
 _studio/
 _drafts/
 
+# discord setup — bot token + spec, never deploys
+_discord/
+
 # internal agent / instruction docs — local context, not site content
 CLAUDE.md
 AGENTS.md

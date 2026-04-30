@@ -57,7 +57,8 @@ mvxworld/
 | 02 | `lore.html` | live | the lore — manifesto as 6-panel poster |
 | 03 | `work.html` | live | curated work, dark archive — entry 001 = MVX brand identity system |
 | 04 | `gallery.html` | live | visual frequency archive — brand mark variants at scale |
-| 05 | `posts/002-the-unfair-advantage.html` | live | transmission 002 |
+| 05 | `transmissions.html` | live | the archive index — every transmission, newest at top |
+| 06 | `posts/002-the-unfair-advantage.html` | live | transmission 002 |
 | 03 | `work.html` | future | curated work, when work exists |
 | 04 | `gallery.html` | future | image archive |
 | 05 | `drop.html` | future | release pages for products / drops |
