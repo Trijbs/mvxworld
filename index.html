@@ -619,15 +619,15 @@
       <div class="status-grid reveal">
         <div class="status-cell">
           <div class="status-key">building</div>
-          <div class="status-val">this <span class="acid">archive</span>, slowly, on purpose.</div>
+          <div class="status-val" data-status="building">this <span class="acid">archive</span>, slowly, on purpose.</div>
         </div>
         <div class="status-cell">
           <div class="status-key">listening</div>
-          <div class="status-val">noise that wakes up before it explodes.</div>
+          <div class="status-val" data-status="listening">noise that wakes up before it explodes.</div>
         </div>
         <div class="status-cell">
           <div class="status-key">thinking</div>
-          <div class="status-val">about <span class="acid">rooms</span>, not pages.</div>
+          <div class="status-val" data-status="thinking">about <span class="acid">rooms</span>, not pages.</div>
         </div>
       </div>
     </section>
@@ -809,6 +809,57 @@
         veil.classList.add('coming');
         setTimeout(function () { window.location.href = href; }, 320);
       });
+    })();
+
+    /* ─── manifest + status loaders (data-driven updates) ─── */
+    (function () {
+      function escHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+      function withEm(text, accent) {
+        var safe = escHtml(text);
+        if (!accent) return safe;
+        var safeAcc = escHtml(accent);
+        var idx = safe.toLowerCase().indexOf(safeAcc.toLowerCase());
+        if (idx === -1) return safe;
+        return safe.slice(0, idx) + '<span class="acid">' + safe.slice(idx, idx + safeAcc.length) + '</span>' + safe.slice(idx + safeAcc.length);
+      }
+      function dateLabel(iso) {
+        if (!iso) return '— · — · —';
+        var p = iso.split('-');
+        return p[0] + ' · ' + p[1] + ' · ' + p[2];
+      }
+
+      // ── transmissions.json → latest-card ──
+      fetch('transmissions.json', { cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (data) {
+          var entries = (data && data.transmissions) || [];
+          if (!entries.length) return;
+          var t = entries[0];   // newest first
+          var card = document.querySelector('[data-latest="card"]');
+          if (card) card.setAttribute('href', t.url);
+          var num = document.querySelector('[data-latest="num"]');
+          if (num) num.textContent = t.num + ' · ' + dateLabel(t.date);
+          var title = document.querySelector('[data-latest="title"]');
+          if (title) title.textContent = t.title;
+          ['filed', 'frequency', 'length', 'status'].forEach(function (key) {
+            var el = document.querySelector('[data-latest="' + key + '"]');
+            if (el) el.textContent = '· ' + (t[key] || '—');
+          });
+        })
+        .catch(function () { /* fallback to static — leave as-is */ });
+
+      // ── status.json → currently block ──
+      fetch('status.json', { cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (data) {
+          ['building', 'listening', 'thinking'].forEach(function (key) {
+            var el = document.querySelector('[data-status="' + key + '"]');
+            var entry = data && data[key];
+            if (!el || !entry) return;
+            el.innerHTML = withEm(entry.text || '', entry.accent || null);
+          });
+        })
+        .catch(function () { /* fallback to static */ });
     })();
 
     /* ─── days-since-last-interesting-idea counter ──── */

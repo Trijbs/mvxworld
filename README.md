@@ -57,8 +57,10 @@ mvxworld/
 | 02 | `lore.html` | live | the lore — manifesto as 6-panel poster |
 | 03 | `work.html` | live | curated work, dark archive — entry 001 = MVX brand identity system |
 | 04 | `gallery.html` | live | visual frequency archive — brand mark variants at scale |
-| 05 | `transmissions.html` | live | the archive index — every transmission, newest at top |
+| 05 | `transmissions.html` | live | the archive index — manifest-driven, reads from `transmissions.json` |
 | 06 | `posts/002-the-unfair-advantage.html` | live | transmission 002 |
+| — | `transmissions.json` | data | source of truth for the transmissions list |
+| — | `status.json` | data | source of truth for the homepage `currently` block |
 | 03 | `work.html` | future | curated work, when work exists |
 | 04 | `gallery.html` | future | image archive |
 | 05 | `drop.html` | future | release pages for products / drops |
@@ -274,26 +276,59 @@ The online studio ships locked. To activate it:
 
 The phrase itself is never stored anywhere — only the hash. Even with the source of `_transmissie/console.html`, an attacker would need to brute-force or guess the phrase. So pick something with at least three uncommon words, no common dictionary phrases.
 
-### the publish workflow
+### the publish workflow (v2 — manifest-driven)
 
-Once the studios are live, posting transmission 002 is:
+Adding a new transmission is now two paste steps + a push. The site reads `transmissions.json` on every load — no HTML editing needed:
 
 ```bash
-# 1. write — in either studio. copy the post HTML.
+# 1. write — in either studio. when it reads right:
 
-# 2. save the post HTML to the right path
-#    (the studio's filename hint says exactly where, e.g. posts/002-foo.html)
+# 2. click "copy post HTML" → save as posts/{NN}-{slug}.html
+#    (studio shows the exact filename below the form)
 
-# 3. paste the index-card snippet over room 05 in index.html
-#    (find <!-- room 05 — latest transmission --> and replace the inner blocks)
+# 3. click "copy JSON entry" → paste at the TOP of transmissions.json's
+#    "transmissions" array. it's already comma-terminated for easy prepending.
 
 # 4. ship
 git add .
-git commit -m "transmission 002 — {title}"
+git commit -m "transmission {NN} — {title}"
 git push
 ```
 
-GitHub Pages redeploys in ~30 seconds. The new room is live.
+What it looks like in `transmissions.json`:
+
+```json
+{
+  "version": 1,
+  "updated": "2026-04-28",
+  "transmissions": [
+    {                                           ← paste the new entry here, at the top
+      "num": "003",
+      "date": "2026-05-12",
+      "title": "naming things",
+      ...
+    },
+    { "num": "002", ... },
+    { "num": "001", ... }
+  ]
+}
+```
+
+Both `transmissions.html` (the index page) and `index.html`'s "latest transmission" card read the manifest on page load. Update the JSON, every page that points at posts updates itself.
+
+### updating your status
+
+The `currently · building / listening / thinking` block on the homepage reads from `status.json`. To change what you're up to without touching HTML:
+
+```json
+{
+  "building": { "text": "the next thing.", "accent": "next" },
+  "listening": { "text": "ambient saturday.", "accent": null },
+  "thinking": { "text": "about the next room.", "accent": "room" }
+}
+```
+
+The `accent` field is the substring that turns acid green. `null` for no accent. Push, the homepage updates.
 
 ### privacy model — the honest version
 
