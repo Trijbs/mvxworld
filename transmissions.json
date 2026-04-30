@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "updated": "2026-04-28",
+  "transmissions": [
+    {
+      "num": "002",
+      "date": "2026-04-28",
+      "title": "the unfair advantage",
+      "title_em": "advantage",
+      "kicker": "a study, in two paragraphs.",
+      "filed": "study",
+      "frequency": "tjbz",
+      "length": "3 minutes",
+      "status": "broadcast",
+      "url": "posts/002-the-unfair-advantage.html"
+    },
+    {
+      "num": "001",
+      "date": "2026-04-27",
+      "title": "the intersection.",
+      "title_em": "intersection",
+      "kicker": "a manifesto, in one breath.",
+      "filed": "manifesto",
+      "frequency": "MVX",
+      "length": "2 minutes",
+      "status": "broadcast",
+      "url": "post.html"
+    }
+  ]
+}

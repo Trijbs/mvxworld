@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "updated": "2026-04-28",
+  "building": {
+    "text": "this archive, slowly, on purpose.",
+    "accent": "archive"
+  },
+  "listening": {
+    "text": "noise that wakes up before it explodes.",
+    "accent": null
+  },
+  "thinking": {
+    "text": "about rooms, not pages.",
+    "accent": "rooms"
+  }
+}

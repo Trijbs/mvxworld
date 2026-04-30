@@ -325,50 +325,27 @@
     <section class="archive">
       <div class="label reveal">
         <span>complete index</span>
-        <span class="count">2 / ∞</span>
+        <span class="count" id="archive-count">— / ∞</span>
       </div>
 
-      <!-- 002 -->
-      <a class="row reveal" href="posts/002-the-unfair-advantage.html" data-internal>
-        <div class="row-head">
-          <span class="num">/ 002 · 2026 · 04 · 28</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2 class="row-title">the unfair <em>advantage</em>.</h2>
-        <p class="row-kicker">a study, in two paragraphs.</p>
-        <div class="row-meta">
-          <span>filed under <b>study</b></span>
-          <span class="dot">·</span>
-          <span>frequency <b>tjbz</b></span>
-          <span class="dot">·</span>
-          <span>length <b>3 minutes</b></span>
-          <span class="dot">·</span>
-          <span>status <b>broadcast</b></span>
-        </div>
-      </a>
+      <!-- transmissions render here — populated from transmissions.json -->
+      <div id="archive-list" aria-live="polite"></div>
 
-      <!-- 001 -->
-      <a class="row reveal" href="post.html" data-internal>
-        <div class="row-head">
-          <span class="num">/ 001 · 2026 · 04 · 27</span>
-          <span class="arrow">→</span>
+      <!-- fallback for no-js / fetch failure -->
+      <noscript>
+        <div class="row" style="opacity: .8">
+          <div class="row-head">
+            <span class="num">/ archive requires javascript</span>
+          </div>
+          <p class="row-kicker">
+            <a href="post.html" style="color: var(--acid); text-decoration: underline;">read the manifesto directly →</a>
+          </p>
         </div>
-        <h2 class="row-title">the <em>intersection</em>.</h2>
-        <p class="row-kicker">a manifesto, in one breath.</p>
-        <div class="row-meta">
-          <span>filed under <b>manifesto</b></span>
-          <span class="dot">·</span>
-          <span>frequency <b>MVX</b></span>
-          <span class="dot">·</span>
-          <span>length <b>2 minutes</b></span>
-          <span class="dot">·</span>
-          <span>status <b>broadcast</b></span>
-        </div>
-      </a>
+      </noscript>
 
       <!-- incoming -->
       <div class="incoming">
-        <div class="num reveal">/ 003 &nbsp;·&nbsp; <span class="acid">incoming</span></div>
+        <div class="num reveal">/ <span id="next-num">003</span> &nbsp;·&nbsp; <span class="acid">incoming</span></div>
         <p class="text reveal" style="--delay: 200ms">
           the next transmission is being <em>tuned</em>.
         </p>
@@ -393,6 +370,68 @@
   </footer>
 
   <script>
+    /* ── escape + emphasis helpers ── */
+    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function withEm(text, accent) {
+      var safe = esc(text);
+      if (!accent) return safe;
+      var safeAccent = esc(accent);
+      // case-insensitive replace, first match only
+      var idx = safe.toLowerCase().indexOf(safeAccent.toLowerCase());
+      if (idx === -1) return safe;
+      return safe.slice(0, idx) + '<em>' + safe.slice(idx, idx + safeAccent.length) + '</em>' + safe.slice(idx + safeAccent.length);
+    }
+    function dateLabel(iso) {
+      if (!iso) return '— · — · —';
+      var p = iso.split('-');
+      return p[0] + ' · ' + p[1] + ' · ' + p[2];
+    }
+
+    /* ── render archive from manifest ── */
+    function renderRow(t) {
+      var titleHtml = withEm(t.title, t.title_em);
+      return ''
+        + '<a class="row reveal visible" href="' + esc(t.url) + '" data-internal>'
+        +   '<div class="row-head">'
+        +     '<span class="num">/ ' + esc(t.num) + ' · ' + esc(dateLabel(t.date)) + '</span>'
+        +     '<span class="arrow">→</span>'
+        +   '</div>'
+        +   '<h2 class="row-title">' + titleHtml + '</h2>'
+        +   '<p class="row-kicker">' + esc(t.kicker || '') + '</p>'
+        +   '<div class="row-meta">'
+        +     '<span>filed under <b>' + esc(t.filed || '—') + '</b></span>'
+        +     '<span class="dot">·</span>'
+        +     '<span>frequency <b>' + esc(t.frequency || '—') + '</b></span>'
+        +     '<span class="dot">·</span>'
+        +     '<span>length <b>' + esc(t.length || '—') + '</b></span>'
+        +     '<span class="dot">·</span>'
+        +     '<span>status <b>' + esc(t.status || 'broadcast') + '</b></span>'
+        +   '</div>'
+        + '</a>';
+    }
+
+    fetch('transmissions.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('manifest unreachable'); return r.json(); })
+      .then(function (data) {
+        var list = document.getElementById('archive-list');
+        var count = document.getElementById('archive-count');
+        var nextNum = document.getElementById('next-num');
+        var entries = (data && data.transmissions) || [];
+        list.innerHTML = entries.map(renderRow).join('');
+        count.textContent = entries.length + ' / ∞';
+        // suggest the next number
+        if (entries.length) {
+          var topNum = parseInt(entries[0].num, 10);
+          if (!isNaN(topNum)) {
+            nextNum.textContent = String(topNum + 1).padStart(3, '0');
+          }
+        }
+      })
+      .catch(function () {
+        var list = document.getElementById('archive-list');
+        list.innerHTML = '<div class="row" style="opacity: .55"><div class="row-head"><span class="num">/ manifest unreachable</span></div><p class="row-kicker">run the site through a local server, not file://, or check transmissions.json. <a href="post.html" style="color: var(--acid);">jump to the manifesto →</a></p></div>';
+      });
+
     /* reveal observer */
     (function () {
       var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
