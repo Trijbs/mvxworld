@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mvxworld-auth",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-10-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+
+  "vars": {
+    "ALLOWED_ORIGIN": "https://mvxworld.art",
+    "ARGON2_TIME_COST": "3",
+    "ARGON2_MEMORY_COST": "32768",
+    "ARGON2_PARALLELISM": "1"
+  },
+
+  "routes": [
+    { "pattern": "auth.mvxworld.art/*", "zone_name": "mvxworld.art" }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "89b7db54fa604d16b4d0cf0ceefc3c10"
+    }
+  ],
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

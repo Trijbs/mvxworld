@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a09">
+  <meta name="description" content="frequency locked. mvxworld 403.">
+  <meta name="robots" content="noindex, follow">
+  <meta property="og:title" content="mvxworld / locked">
+  <meta property="og:description" content="this room requires a different key.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mvxworld.art/403.html">
+  <meta property="og:image" content="https://mvxworld.art/img/FullMark.png">
+
+  <title>locked · mvxworld</title>
+
+  <link rel="icon" href="img/MVX-favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="img/MVX-favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      background: var(--ink-base);
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: var(--t-base);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--acid); color: var(--ink-base); }
+    ::-moz-selection { background: var(--acid); color: var(--ink-base); }
+
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      opacity: .08; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 200px 200px;
+    }
+
+    .veil {
+      position: fixed; inset: 0; background: var(--ink-base);
+      z-index: 9000; pointer-events: none; opacity: 1;
+      transition: opacity 320ms ease;
+    }
+    .veil.gone { opacity: 0; }
+    .veil.coming { opacity: 1; pointer-events: auto; }
+    @media (prefers-reduced-motion: reduce) { .veil { display: none; } }
+
+    .top {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: var(--easy) var(--gutter);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: var(--easy);
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    .top * { pointer-events: auto; }
+    .mark {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--paper);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mark img.mark-icon {
+      width: 22px; height: 22px; object-fit: contain;
+      animation: pulse 3.4s var(--ease) infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .mark span.tag { color: var(--mute); margin-left: 8px; }
+
+    .nav-back { display: flex; gap: var(--easy); font-family: var(--mono); font-size: var(--t-meta); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+    .nav-back a { transition: color var(--quick) var(--ease), letter-spacing var(--quick) var(--ease); }
+    .nav-back a:hover, .nav-back a:focus-visible { color: var(--acid); letter-spacing: .22em; }
+
+    .hero {
+      min-height: 100vh; min-height: 100dvh;
+      padding: calc(var(--rhythm) + 80px) var(--gutter) var(--rhythm);
+      display: flex; flex-direction: column; justify-content: center;
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .signal {
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--burn);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: var(--easy);
+    }
+    .signal::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--burn);
+      animation: blink 1.4s steps(2, end) infinite;
+    }
+    @keyframes blink { 0%, 40% { opacity: 1; } 50%, 100% { opacity: .15; } }
+
+    .error-code {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(80px, 18vw, 280px);
+      line-height: .88;
+      letter-spacing: -.03em;
+      color: var(--paper);
+    }
+    .error-code em { color: var(--burn); }
+    .error-code .dot { color: var(--mute); font-style: italic; }
+
+    .kicker {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(20px, 2.4vw, 32px);
+      color: var(--mute);
+      margin-top: var(--easy);
+      max-width: 32ch;
+      line-height: 1.2;
+    }
+    .kicker em { color: var(--paper); font-style: italic; }
+
+    .detail {
+      font-family: var(--mono);
+      font-size: var(--t-label);
+      color: var(--mute);
+      margin-top: var(--roomy);
+      max-width: 48ch;
+      line-height: 1.6;
+      letter-spacing: .04em;
+    }
+    .detail strong { color: var(--paper); font-weight: 500; }
+
+    footer.koord {
+      padding: var(--rhythm) var(--gutter) var(--easy);
+      border-top: var(--line-soft);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--easy);
+      font-family: var(--mono);
+      font-size: var(--t-meta);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      align-items: end;
+    }
+    footer.koord b { display: block; font-weight: 400; color: var(--paper); margin-bottom: 6px; }
+    footer.koord .right { text-align: right; }
+    footer.koord .center { text-align: center; }
+    footer.koord .acid { color: var(--acid); }
+    footer.koord .burn { color: var(--burn); }
+
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); transition-delay: var(--delay, 0ms); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; border-radius: 1px; }
+
+    @media (max-width: 720px) {
+      footer.koord { grid-template-columns: 1fr; }
+      footer.koord .right, footer.koord .center { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .veil { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="veil" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="mark" href="index.html" data-internal>
+      <img class="mark-icon" src="img/Symbol.png" alt="" aria-hidden="true">
+      <span>mvxworld</span>
+      <span class="tag">/locked</span>
+    </a>
+    <nav class="nav-back" aria-label="rooms">
+      <a href="index.html" data-internal>← world</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="signal reveal">frequency locked · code 403 · access denied</div>
+
+      <h1 class="error-code reveal" style="--delay: 200ms">
+        l<em>oc</em>k<span class="dot">.</span>
+      </h1>
+
+      <p class="kicker reveal" style="--delay: 500ms">
+        this room requires a <em>different key</em>.
+        you don't have permission to enter this frequency.
+      </p>
+
+      <div class="detail reveal" style="--delay: 700ms">
+        <strong>what happened:</strong> the server understood the request but
+        refuses to authorize it. this frequency is restricted.
+        some rooms are not meant for everyone.
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="koord">
+    <div>
+      <b>koordinaten</b>
+      52.3676° N · 4.9041° E
+    </div>
+    <div class="center">
+      <b>mvx<span class="acid">/</span>locked</b>
+      <span class="burn">●</span> 403 · frequency locked
+    </div>
+    <div class="right">
+      <b><a href="index.html" data-internal>← return to the world</a></b>
+      <span class="acid">●</span> still here
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    })();
+
+    (function () {
+      var veil = document.querySelector('.veil');
+      if (!veil) return;
+      requestAnimationFrame(function () { veil.classList.add('gone'); });
+      var prefersReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduce) return;
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-internal]');
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+        var href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) return;
+        e.preventDefault();
+        veil.classList.remove('gone');
+        veil.classList.add('coming');
+        setTimeout(function () { window.location.href = href; }, 320);
+      });
+    })();
+  </script>
+
+</body>
+</html>

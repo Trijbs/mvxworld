@@ -21,6 +21,10 @@ dist/
 # env / secrets
 .env
 .env.*
+.dev.vars
+
+# cloudflare worker local state
+.wrangler/
 
 # the studio — local-only authoring tool, never deploys
 _studio/

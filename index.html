@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a09">
-  <meta name="description" content="mvxworld — a personal universe, archived in transmissions. v0.1, expanding.">
+  <meta name="description" content="mvxworld · a personal universe, archived in transmissions. v0.1, expanding.">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="mvxworld">
   <meta property="og:description" content="personal universe · v0.1 · expanding">
@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://mvxworld.art">
   <meta property="og:image" content="https://mvxworld.art/img/FullMark.png">
 
-  <title>mvxworld — v0.1</title>
+  <title>mvxworld · v0.1</title>
 
   <link rel="icon" href="img/MVX-favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="img/MVX-favicon.png">
@@ -560,7 +560,7 @@
       <span>mvxworld</span><span style="color: var(--mute); margin-left: 8px;">/v0.1</span>
     </a>
     <nav class="nav reveal" aria-label="primary" style="--delay: 200ms">
-      <span class="clock" id="clock" aria-live="off">— : — : —</span>
+      <span class="clock" id="clock" aria-live="off">··:··:··</span>
       <a href="transmissions.html" data-cursor data-internal>transmissions</a>
       <a href="lore.html" data-cursor data-internal>the lore</a>
       <a href="work.html" data-cursor data-internal>the work</a>
@@ -658,7 +658,7 @@
         <div class="teaser-cta">
           <span class="label">read the full text</span>
           <a class="link" href="post.html" data-cursor data-internal>
-            <span>transmission 001 — the intersection</span>
+            <span>transmission 001 · the intersection</span>
             <span>→</span>
           </a>
         </div>
@@ -697,7 +697,7 @@
     </div>
     <div class="center">
       <b>mvx<span class="acid">/</span>time</b>
-      <span id="clock-foot">— : — : —</span> CET
+      <span id="clock-foot">··:··:··</span> CET
     </div>
     <div class="right">
       <b>doc 001 · v0.1</b>
@@ -823,7 +823,7 @@
         return safe.slice(0, idx) + '<span class="acid">' + safe.slice(idx, idx + safeAcc.length) + '</span>' + safe.slice(idx + safeAcc.length);
       }
       function dateLabel(iso) {
-        if (!iso) return '— · — · —';
+        if (!iso) return '·· · ·· · ··';
         var p = iso.split('-');
         return p[0] + ' · ' + p[1] + ' · ' + p[2];
       }
@@ -843,7 +843,7 @@
           if (title) title.textContent = t.title;
           ['filed', 'frequency', 'length', 'status'].forEach(function (key) {
             var el = document.querySelector('[data-latest="' + key + '"]');
-            if (el) el.textContent = '· ' + (t[key] || '—');
+            if (el) el.textContent = '· ' + (t[key] || '··');
           });
         })
         .catch(function () { /* fallback to static — leave as-is */ });

@@ -59,8 +59,11 @@ mvxworld/
 | 04 | `gallery.html` | live | visual frequency archive — brand mark variants at scale |
 | 05 | `transmissions.html` | live | the archive index — manifest-driven, reads from `transmissions.json` |
 | 06 | `posts/002-the-unfair-advantage.html` | live | transmission 002 |
+| 07 | `404.html` | live | the lost room — served on missing routes, lists known frequencies |
 | — | `transmissions.json` | data | source of truth for the transmissions list |
 | — | `status.json` | data | source of truth for the homepage `currently` block |
+| — | `sitemap.xml` | seo | crawler index of every public page |
+| — | `robots.txt` | seo | allow everything except `_transmissie/` |
 | 03 | `work.html` | future | curated work, when work exists |
 | 04 | `gallery.html` | future | image archive |
 | 05 | `drop.html` | future | release pages for products / drops |
@@ -262,19 +265,48 @@ Path on the live site: `https://mvxworld.art/_transmissie/console.html`.
 
 ### setting up the online studio passphrase
 
-The online studio ships locked. To activate it:
+The online studio ships locked. Authentication is handled server-side by a Cloudflare Worker at `auth.mvxworld.art` using Argon2id — the passphrase is never stored in source code.
 
-1. Open the **local studio** (`_studio/index.html`) on your Mac.
-2. Scroll to **set the online studio passphrase** at the bottom of the form.
-3. Type a phrase only you know — make it memorable, not a password manager string. The studio runs SHA-256 on it client-side.
-4. The hash auto-copies to your clipboard.
-5. Open `_transmissie/console.html` in your editor. Find the line:
-   ```js
-   const FREQUENCY_HASH = "REPLACE_WITH_YOUR_OWN_SHA256_HASH";
+To activate it:
+
+1. **Install prerequisites:**
+   ```bash
+   npm install -g wrangler
+   wrangler login
    ```
-6. Paste your hash inside the quotes. Save, commit, push.
 
-The phrase itself is never stored anywhere — only the hash. Even with the source of `_transmissie/console.html`, an attacker would need to brute-force or guess the phrase. So pick something with at least three uncommon words, no common dictionary phrases.
+2. **Generate secrets:**
+   ```bash
+   cd workers/mvxworld-auth
+   npm install
+   npm run setup
+   ```
+   The script prompts for a passphrase, then outputs two secrets: `ARGON2_HASH` and `JWT_SECRET`.
+
+3. **Set the Worker secrets:**
+   ```bash
+   wrangler secret put ARGON2_HASH   # paste the Argon2id hash
+   wrangler secret put JWT_SECRET    # paste the JWT signing key
+   ```
+
+4. **Create the KV namespace for rate limiting:**
+   ```bash
+   wrangler kv namespace create RATE_LIMIT_KV
+   ```
+   Copy the returned ID into `wrangler.jsonc` → `kv_namespaces[0].id`.
+
+5. **Deploy the Worker:**
+   ```bash
+   wrangler deploy
+   ```
+
+6. **Add DNS record:**
+   In your DNS settings, add a CNAME:
+   ```
+   auth.mvxworld.art → mvxworld-auth.<your-subdomain>.workers.dev
+   ```
+
+The passphrase itself is never stored anywhere — only the Argon2id hash. Even with the Worker source, an attacker would need to brute-force the phrase through the rate-limited endpoint (5 attempts per 15 minutes). Pick something with at least three uncommon words.
 
 ### the publish workflow (v2 — manifest-driven)
 
@@ -333,7 +365,7 @@ The `accent` field is the substring that turns acid green. `null` for no accent.
 ### privacy model — the honest version
 
 - **Local studio:** truly private. Gitignored. Never leaves the Mac. There is no scenario where readers see this.
-- **Online studio:** "good enough" private. Lives in a public repo at an obscure path with a passphrase gate. A determined snoop reading the repo file tree can find the path, but can't unlock it without your passphrase. The gate is client-side and bypassable in DevTools by reading the DOM directly — but the editor doesn't reveal anything sensitive (no drafts, no API keys, no real auth). Worst case: someone bypasses and uses the editor to *generate* a post HTML — but they can't push it to your repo without GitHub auth.
+- **Online studio:** server-side authenticated. Passphrase verification happens on a Cloudflare Worker (`auth.mvxworld.art`) using Argon2id — the hash is never in client-side code. The gate cannot be bypassed via DevTools. Rate limiting (5 attempts / 15 min) prevents brute-force. The path is discoverable in the repo, but unlocking requires the passphrase. Worst case: someone finds the path — they still can't get in without the phrase.
 - If you ever want true online privacy: make the repo private and switch hosting to Cloudflare Pages (free for private repos; GitHub Pages requires Pro).
 
 ## the rule

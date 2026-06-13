@@ -1,0 +1,8 @@
+# mvxworld.art — archive the frequencies.
+# crawlers welcome. broadcast room is gated by intent.
+
+User-agent: *
+Allow: /
+Disallow: /_transmissie/
+
+Sitemap: https://mvxworld.art/sitemap.xml

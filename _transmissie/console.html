@@ -233,14 +233,14 @@
   <!-- ── PASSPHRASE GATE ── -->
   <section class="gate" id="gate">
     <div class="gate-inner">
-      <div class="static-noise">— transmission requires authorization —</div>
+      <div class="static-noise">· transmission requires authorization ·</div>
       <h1 class="prompt"><em>frequency</em>?</h1>
       <input id="gate-input" class="gate-input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="·  ·  ·  ·  ·  ·  ·  ·">
       <div class="gate-hint" id="gate-hint">enter to broadcast</div>
 
       <div class="gate-config" id="gate-config">
         <strong>this console isn't configured.</strong><br><br>
-        open <code>_studio/index.html</code> on your mac, scroll to the <em>set the online studio passphrase</em> tool, generate a SHA-256 hash, and paste it into this file at the line marked <code>FREQUENCY_HASH = …</code>. commit and push. then come back here.
+        the auth worker at <code>auth.mvxworld.art</code> needs to be set up first. run <code>npm run setup</code> in <code>workers/mvxworld-auth/</code>, then deploy with <code>wrangler deploy</code>. see <code>docs/security-upgrade.md</code> for full instructions.
       </div>
     </div>
   </section>
@@ -352,27 +352,23 @@ select text, hit ⌘B for **bold** or ⌘I for *italic*.
 
   <script>
     /* ─────────────────────────────────────────────────────────
-       FREQUENCY_HASH — the SHA-256 hash of your passphrase.
-       to set: open _studio/index.html on your mac, use the
-       hash generator, paste the result here, commit, push.
-       leave as the placeholder string until configured.
+       AUTH — server-side Argon2id verification via Cloudflare Worker.
+       The passphrase is never stored client-side. Verification happens
+       at auth.mvxworld.art. A JWT is issued on success.
        ───────────────────────────────────────────────────────── */
-    const FREQUENCY_HASH = "ec51e69e52dff050833027e5c74a0bd3d1137c929ddad86aee9bf5c2f0807acc";
+      
+    const WORKER_URL = 'https://mvxworld-auth.trjbs.workers.dev';
+    const SESSION_KEY = 'mvx-studio-token';
 
     /* ── helpers ─────────────────────────── */
     const $ = (id) => document.getElementById(id);
     const today = () => new Date().toISOString().slice(0, 10);
-    const dateLabel = (iso) => iso ? iso.split('-').join(' · ') : '— · — · —';
+    const dateLabel = (iso) => iso ? iso.split('-').join(' · ') : '·· · ·· · ··';
     const slugify = (s) => (s || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
     const escapeHtml = (s) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
     function isConfigured() {
-      return /^[0-9a-f]{64}$/i.test(FREQUENCY_HASH);
-    }
-
-    async function sha256(s) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+      return WORKER_URL && !WORKER_URL.includes('PLACEHOLDER');
     }
 
     /* ── gate logic ──────────────────────── */
@@ -384,34 +380,76 @@ select text, hit ⌘B for **bold** or ⌘I for *italic*.
     async function tryUnlock() {
       const phrase = $('gate-input').value;
       if (!phrase || !isConfigured()) return;
-      const hash = await sha256(phrase);
-      if (hash === FREQUENCY_HASH.toLowerCase()) {
-        $('gate').classList.add('unlocked');
+
+      $('gate-input').disabled = true;
+      $('gate-hint').textContent = 'verifying…';
+
+      try {
+        const res = await fetch(`${WORKER_URL}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ passphrase: phrase }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.ok && data.token) {
+          try { sessionStorage.setItem(SESSION_KEY, data.token); } catch (e) {}
+          $('gate').classList.add('unlocked');
+          setTimeout(() => {
+            $('gate').style.display = 'none';
+            $('editor').classList.add('shown');
+          }, 320);
+        } else if (res.status === 429) {
+          const mins = data.retryAfter ? Math.ceil(data.retryAfter / 60) : 15;
+          $('gate-hint').textContent = `locked. try in ${mins}m.`;
+          $('gate-input').classList.add('wrong');
+          setTimeout(() => {
+            $('gate-input').classList.remove('wrong');
+            $('gate-hint').textContent = 'enter to broadcast';
+            $('gate-input').value = '';
+            $('gate-input').disabled = false;
+          }, 3000);
+        } else {
+          $('gate-input').classList.add('wrong');
+          $('gate-hint').textContent = 'static.';
+          setTimeout(() => {
+            $('gate-input').classList.remove('wrong');
+            $('gate-hint').textContent = 'enter to broadcast';
+            $('gate-input').value = '';
+            $('gate-input').disabled = false;
+          }, 1200);
+        }
+      } catch (err) {
+        $('gate-hint').textContent = 'connection error.';
+        $('gate-input').disabled = false;
         setTimeout(() => {
-          $('gate').style.display = 'none';
-          $('editor').classList.add('shown');
-          // remember unlock for this session only
-          try { sessionStorage.setItem('mvx-studio-unlocked', '1'); } catch (e) {}
-        }, 320);
-      } else {
-        $('gate-input').classList.add('wrong');
-        $('gate-hint').textContent = 'static.';
-        setTimeout(() => {
-          $('gate-input').classList.remove('wrong');
           $('gate-hint').textContent = 'enter to broadcast';
-          $('gate-input').value = '';
-        }, 1200);
+        }, 2000);
       }
     }
     $('gate-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
 
-    // session-scoped auto-unlock (closes when tab closes)
-    try {
-      if (sessionStorage.getItem('mvx-studio-unlocked') === '1' && isConfigured()) {
-        $('gate').style.display = 'none';
-        $('editor').classList.add('shown');
-      }
-    } catch (e) {}
+    // session-scoped auto-unlock — validate JWT with Worker on reload
+    (async () => {
+      try {
+        const token = sessionStorage.getItem(SESSION_KEY);
+        if (!token || !isConfigured()) return;
+
+        const res = await fetch(`${WORKER_URL}/validate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.valid) {
+          $('gate').style.display = 'none';
+          $('editor').classList.add('shown');
+        } else {
+          sessionStorage.removeItem(SESSION_KEY);
+        }
+      } catch (e) {}
+    })();
 
     /* ── parse body to HTML ──────────────── */
     function parseBody(text) {
@@ -466,12 +504,12 @@ select text, hit ⌘B for **bold** or ⌘I for *italic*.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ebe7dc">
-  <meta name="description" content="transmission ${d.num} — ${escapeHtml(d.title)}.">
-  <meta property="og:title" content="transmission ${d.num} — ${escapeHtml(d.title)}">
+  <meta name="description" content="transmission ${d.num} · ${escapeHtml(d.title)}.">
+  <meta property="og:title" content="transmission ${d.num} · ${escapeHtml(d.title)}">
   <meta property="og:description" content="${escapeHtml(d.subtitle)}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://mvxworld.art/posts/${d.num}-${d.slug}.html">
-  <title>transmission ${d.num} — ${d.title} · mvxworld</title>
+  <title>transmission ${d.num} · ${d.title} · mvxworld</title>
   <link rel="icon" href="../img/MVX-favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="../img/MVX-favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -533,7 +571,7 @@ select text, hit ⌘B for **bold** or ⌘I for *italic*.
 <div class="latest-meta">
   <span class="field">filed under <span>· ${escapeHtml(d.filed)}</span></span>
   <span class="field">frequency <span>· ${escapeHtml(d.freq)}</span></span>
-  <span class="field">length <span>· ${escapeHtml(d.length || '—')}</span></span>
+  <span class="field">length <span>· ${escapeHtml(d.length || '··')}</span></span>
   <span class="field">status <span>· broadcast</span></span>
 </div>
 <a class="latest-card" href="posts/${d.num}-${d.slug}.html" data-cursor data-internal>

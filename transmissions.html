@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://mvxworld.art/transmissions.html">
   <meta property="og:image" content="https://mvxworld.art/img/FullMark.png">
 
-  <title>transmissions — mvxworld</title>
+  <title>transmissions · mvxworld</title>
 
   <link rel="icon" href="img/MVX-favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="img/MVX-favicon.png">
@@ -325,7 +325,7 @@
     <section class="archive">
       <div class="label reveal">
         <span>complete index</span>
-        <span class="count" id="archive-count">— / ∞</span>
+        <span class="count" id="archive-count">·· / ∞</span>
       </div>
 
       <!-- transmissions render here — populated from transmissions.json -->
@@ -382,7 +382,7 @@
       return safe.slice(0, idx) + '<em>' + safe.slice(idx, idx + safeAccent.length) + '</em>' + safe.slice(idx + safeAccent.length);
     }
     function dateLabel(iso) {
-      if (!iso) return '— · — · —';
+      if (!iso) return '·· · ·· · ··';
       var p = iso.split('-');
       return p[0] + ' · ' + p[1] + ' · ' + p[2];
     }
@@ -399,11 +399,11 @@
         +   '<h2 class="row-title">' + titleHtml + '</h2>'
         +   '<p class="row-kicker">' + esc(t.kicker || '') + '</p>'
         +   '<div class="row-meta">'
-        +     '<span>filed under <b>' + esc(t.filed || '—') + '</b></span>'
+        +     '<span>filed under <b>' + esc(t.filed || '··') + '</b></span>'
         +     '<span class="dot">·</span>'
-        +     '<span>frequency <b>' + esc(t.frequency || '—') + '</b></span>'
+        +     '<span>frequency <b>' + esc(t.frequency || '··') + '</b></span>'
         +     '<span class="dot">·</span>'
-        +     '<span>length <b>' + esc(t.length || '—') + '</b></span>'
+        +     '<span>length <b>' + esc(t.length || '··') + '</b></span>'
         +     '<span class="dot">·</span>'
         +     '<span>status <b>' + esc(t.status || 'broadcast') + '</b></span>'
         +   '</div>'
