@@ -35,6 +35,20 @@ const ROOM_CONFIGS = {
     atmosphere: 'Ordered',
     color: 0xffffff,
     geometry: 'grid'
+  },
+  monolith: {
+    name: 'The Monolith',
+    state: 'Singularity',
+    atmosphere: 'Oppressive',
+    color: 0xff4d1c, // The 'Burn' color
+    geometry: 'pillars'
+  },
+  lattice: {
+    name: 'The Lattice',
+    state: 'Connectivity',
+    atmosphere: 'Complex',
+    color: 0x8a887e, // The 'Mute' color
+    geometry: 'lattice'
   }
 };
 
@@ -44,6 +58,8 @@ class RoomManager {
     this.currentRoom = null;
     this.roomGroup = new THREE.Group();
     this.scene.add(this.roomGroup);
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
   }
 
   async transitionTo(roomKey) {
@@ -78,6 +94,15 @@ class RoomManager {
         const slab = new THREE.Mesh(slabGeo, slabMat);
         slab.position.set((Math.random()-0.5)*10, Math.random()*5, (Math.random()-0.5)*10);
         slab.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+        
+        // Attach metadata for interactivity
+        slab.userData = { 
+          type: 'transmission', 
+          id: `tx-${i}`, 
+          title: `Transmission ${i+1}`,
+          url: `posts/00${(i % 3) + 1}.html` // Mock URLs for now
+        };
+        
         this.roomGroup.add(slab);
       }
     } else if (config.geometry === 'rings') {
@@ -91,14 +116,48 @@ class RoomManager {
     } else if (config.geometry === 'grid') {
       const boxGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
       const boxMat = new THREE.MeshStandardMaterial({ color });
+      let i = 0;
       for(let x = -2; x <= 2; x++) {
         for(let z = -2; z <= 2; z++) {
           const box = new THREE.Mesh(boxGeo, boxMat);
           box.position.set(x * 2, 0.1, z * 2);
+          
+          // Attach metadata for interactivity
+          box.userData = { 
+            type: 'archive-node', 
+            id: `node-${i}`, 
+            title: `Archive Node ${i+1}`,
+            url: `posts/00${(i % 3) + 1}.html` // Mock URLs for now
+          };
+          
           this.roomGroup.add(box);
+          i++;
         }
       }
+    } else if (config.geometry === 'pillars') {
+      // Monolith: Towering, oppressive pillars
+      for(let i = 0; i < 12; i++) {
+        const height = Math.random() * 10 + 2;
+        const pillarGeo = new THREE.BoxGeometry(0.5, height, 0.5);
+        const pillarMat = new THREE.MeshStandardMaterial({ color, roughness: 0, metalness: 1 });
+        const pillar = new THREE.Mesh(pillarGeo, pillarMat);
+        pillar.position.set((Math.random()-0.5)*15, height/2, (Math.random()-0.5)*15);
+        this.roomGroup.add(pillar);
+      }
+    } else if (config.geometry === 'lattice') {
+      // Lattice: Interconnected lines of data
+      const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.4 });
+      for(let i = 0; i < 15; i++) {
+        const points = [];
+        for(let j = 0; j < 5; j++) {
+          points.push(new THREE.Vector3((Math.random()-0.5)*10, Math.random()*10, (Math.random()-0.5)*10));
+        }
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(geometry, material);
+        this.roomGroup.add(line);
+      }
     }
+  }
   }
 
   async fadeOut() {
@@ -170,6 +229,8 @@ class RoomZero {
       nexus: { pos: { x: 2, y: 1.2, z: 2 }, target: { x: 0, y: 0.5, z: 0 } },
       echo: { pos: { x: -4, y: 1.65, z: 2 }, target: { x: -2, y: 1, z: 0 } },
       archive: { pos: { x: 0, y: 5, z: 8 }, target: { x: 0, y: 0, z: 0 } },
+      monolith: { pos: { x: 0, y: 1, z: 12 }, target: { x: 0, y: 5, z: 0 } },
+      lattice: { pos: { x: 8, y: 3, z: 8 }, target: { x: 0, y: 0, z: 0 } },
     };
     this.isTransitioning = false;
   }
@@ -243,12 +304,57 @@ class RoomZero {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
+    // Hover effect for interactive geometry
+    window.addEventListener('mousemove', (e) => {
+      this.roomManager.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      this.roomManager.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      this.roomManager.raycaster.setFromCamera(this.roomManager.mouse, this.camera);
+      const intersects = this.roomManager.raycaster.intersectObjects(this.roomManager.roomGroup.children);
+
+      // Reset all interactive objects
+      this.roomManager.roomGroup.children.forEach(obj => {
+        if (obj.userData && obj.userData.url) {
+          obj.scale.set(1, 1, 1);
+          if (obj.material) obj.material.emissiveIntensity = 0;
+        }
+      });
+
+      // Highlight hovered object
+      if (intersects.length > 0) {
+        const object = intersects[0].object;
+        if (object.userData && object.userData.url) {
+          object.scale.set(1.2, 1.2, 1.2);
+          if (object.material) object.material.emissiveIntensity = 2;
+          document.body.style.cursor = 'pointer';
+        }
+      } else {
+        document.body.style.cursor = 'default';
+      }
+    });
+
+    // Click to interact with procedural geometry
+    window.addEventListener('click', (e) => {
+      this.roomManager.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      this.roomManager.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      this.roomManager.raycaster.setFromCamera(this.roomManager.mouse, this.camera);
+      const intersects = this.roomManager.raycaster.intersectObjects(this.roomManager.roomGroup.children);
+
+      if (intersects.length > 0) {
+        const object = intersects[0].object;
+        if (object.userData && object.userData.url) {
+          console.log(`📂 Opening: ${object.userData.title}`);
+          window.location.href = object.userData.url;
+        }
+      }
+    });
+
     document.querySelectorAll('.cam-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const shotKey = btn.getAttribute('data-shot') === '0' ? 'void' : 
-                        btn.getAttribute('data-shot') === '1' ? 'nexus' : 
-                        btn.getAttribute('data-shot') === '2' ? 'echo' : 'archive';
+        const shotKey = btn.getAttribute('data-shot');
         this.transitionToRoom(shotKey);
+        console.log(`🎬 UI Trigger: Switching to room ${shotKey}`);
       });
     });
 
