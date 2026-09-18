@@ -590,13 +590,20 @@
       </p>
 
       <div class="hero-foot reveal" style="--delay: 1400ms">
-        <span>scroll &nbsp;<span class="arrow">↓</span>&nbsp; enter the room</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--paper); opacity: .8; letter-spacing: 0;">
+            MVXWorld is an evolving digital universe exploring world-building, design, storytelling, technology, and experimental art.
+          </span>
+          <a href="#room-01" data-cursor data-internal style="font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--acid); transition: letter-spacing var(--quick) var(--ease);">
+            start here · explore the world ↗
+          </a>
+        </div>
         <span>v0.1 · expanding</span>
       </div>
     </section>
 
     <!-- room 01 — frequencies -->
-    <section class="room" aria-labelledby="freq-label">
+    <section class="room" id="room-01" aria-labelledby="freq-label">
       <div class="room-label reveal"><span class="room-num">01</span> &nbsp;·&nbsp; <span id="freq-label">frequencies / inhabitants</span></div>
       <div class="freqs reveal">
         <span class="acid" style="color: var(--acid)">MVX</span>
