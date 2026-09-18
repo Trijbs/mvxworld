@@ -1,0 +1,29 @@
+{
+  "name": "mvxworld",
+  "version": "1.0.0",
+  "description": "> a personal universe. archived in transmissions. v0.1, expanding.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "update-manifest": "node automate-manifest.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Trijbs/mvxworld.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Trijbs/mvxworld/issues"
+  },
+  "homepage": "https://github.com/Trijbs/mvxworld#readme",
+  "dependencies": {
+    "fs-extra": "^11.4.0",
+    "path": "^0.12.7"
+  }
+}

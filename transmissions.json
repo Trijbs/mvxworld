@@ -6,9 +6,9 @@
       "num": "003",
       "date": "2026-09-18",
       "title": "on the nature of digital rooms",
-      "title_em": "digital rooms",
-      "kicker": "a meditation, on the philosophy of digital space.",
-      "filed": "meditation",
+      "title_em": "rooms",
+      "kicker": "automated transmission",
+      "filed": "archive",
       "frequency": "MVX",
       "length": "2 minutes",
       "status": "broadcast",
@@ -16,27 +16,15 @@
     },
     {
       "num": "002",
-      "date": "2026-04-28",
+      "date": "2026-09-18",
       "title": "the unfair advantage",
       "title_em": "advantage",
-      "kicker": "a study, in two paragraphs.",
-      "filed": "study",
-      "frequency": "tjbz",
-      "length": "3 minutes",
-      "status": "broadcast",
-      "url": "posts/002-the-unfair-advantage.html"
-    },
-    {
-      "num": "001",
-      "date": "2026-04-27",
-      "title": "the intersection.",
-      "title_em": "intersection",
-      "kicker": "a manifesto, in one breath.",
-      "filed": "manifesto",
+      "kicker": "automated transmission",
+      "filed": "archive",
       "frequency": "MVX",
       "length": "2 minutes",
       "status": "broadcast",
-      "url": "post.html"
+      "url": "posts/002-the-unfair-advantage.html"
     }
   ]
 }
