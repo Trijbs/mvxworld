@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVXWorld | Room 0</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #0a0a09; font-family: 'IBM Plex Mono', monospace; }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #c8ff00;
+            z-index: 10;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: .2em;
+            font-size: 12px;
+        }
+        #ui * { pointer-events: auto; }
+        #loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a09;
+            color: #c8ff00;
+            z-index: 100;
+            transition: opacity 1s ease;
+        }
+        .cam-btn {
+            background: transparent;
+            border: 1px solid rgba(200, 255, 0, 0.3);
+            color: #c8ff00;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            padding: 4px 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .cam-btn:hover {
+            background: rgba(200, 255, 0, 0.1);
+            border-color: #c8ff00;
+            padding-left: 12px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loader">initializing_geometry...</div>
+    <div id="ui">
+        <div style="margin-bottom: 10px;">Coordinate: 0.0.0</div>
+        <div style="margin-bottom: 10px;">State: Room 0 Prototype</div>
+        <div style="margin-bottom: 20px;">Atmosphere: Void</div>
+        
+        <div id="camera-controls" style="display: flex; flex-direction: column; gap: 5px; opacity: 0.6; transition: opacity 0.3s ease;">
+            <div style="font-size: 9px; color: var(--acid); margin-bottom: 5px;">Cinematic Controls</div>
+            <button class="cam-btn" data-shot="0">01 Arrival</button>
+            <button class="cam-btn" data-shot="1">02 Desk</button>
+            <button class="cam-btn" data-shot="2">03 Wall</button>
+            <button class="cam-btn" data-shot="3">04 Signal</button>
+            <button class="cam-btn" data-shot="4">05 Overview</button>
+        </div>
+    </div>
+    <canvas id="webgl"></canvas>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
