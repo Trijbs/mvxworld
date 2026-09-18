@@ -1,7 +1,19 @@
 {
   "version": 1,
-  "updated": "2026-04-28",
+  "updated": "2026-09-18",
   "transmissions": [
+    {
+      "num": "003",
+      "date": "2026-09-18",
+      "title": "on the nature of digital rooms",
+      "title_em": "digital rooms",
+      "kicker": "a meditation, on the philosophy of digital space.",
+      "filed": "meditation",
+      "frequency": "MVX",
+      "length": "2 minutes",
+      "status": "broadcast",
+      "url": "posts/003-on-the-nature-of-digital-rooms.html"
+    },
     {
       "num": "002",
       "date": "2026-04-28",
